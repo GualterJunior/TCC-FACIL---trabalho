@@ -1,4 +1,4 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5% 20SVG/2% 20CMYK/1% 20Full% 20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
 
 <p align="center">
 <a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
@@ -9,71 +9,41 @@
 
 ---
 
-# TCC Fácil - Sistema de Sorteio e Acompanhamento de Temas
+# TCC Fácil: Sistema de Sorteio e Acompanhamento de Temas
 
-## 📖 Sobre o Projeto
-O **TCC Fácil** é uma aplicação web desenvolvida para simplificar e automatizar a gestão inicial e o acompanhamento de Trabalhos de Conclusão de Curso. Ele permite o cadastro de turmas, sorteio automático e imparcial de temas e o acompanhamento estruturado por etapas (Definição, Fundamentação, Desenvolvimento e Entrega Final).
+[cite_start]O **TCC Fácil** é uma plataforma web projetada para mitigar os desafios organizacionais enfrentados durante o Trabalho de Conclusão de Curso[cite: 1]. [cite_start]O sistema foca na automação da distribuição de temas e no monitoramento rigoroso de prazos, promovendo equidade e transparência entre alunos, professores e coordenadores[cite: 1, 2].
 
-## ✅ Status de Entrega (3ª Etapa)
-Este repositório foi estruturado para cumprir os requisitos de infraestrutura inicial:
-- [x] **Projeto Laravel criado:** Framework Laravel v12 instalado e inicializado.
-- [x] **Repositório configurado:** Versionamento Git ativado e espelhado no GitHub/GitLab.
-- [x] **Commits organizados:** Estrutura inicial submetida com versionamento lógico.
-- [x] **README do projeto:** Documentação atualizada com as informações do escopo.
+## 📋 Visão Geral do Projeto
 
-## 👥 Autores
-* Arthur Rangel Copetti
-* Gualter Brandão
+[cite_start]Atualmente, muitos processos de escolha de temas são manuais, o que gera falta de controle e riscos de atrasos na entrega final[cite: 2]. [cite_start]A solução proposta automatiza integralmente o sorteio e oferece uma interface de acompanhamento evolutivo dividida em etapas críticas[cite: 2]:
 
----
+1.  [cite_start]**Definição do Tema:** Alinhamento de objetivos e justificativa[cite: 3].
+2.  [cite_start]**Fundamentação Teórica:** Pesquisa bibliográfica e referencial[cite: 3].
+3.  [cite_start]**Desenvolvimento:** Execução metodológica e técnica[cite: 3].
+4.  [cite_start]**Entrega Final:** Ajustes, formatação e submissão[cite: 3].
 
-## About Laravel
+## 🛠️ Especificações Técnicas (Estrutura Inicial)
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+A base do sistema foi estabelecida utilizando tecnologias modernas para garantir robustez e escalabilidade:
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+* **Framework:** Laravel 12.x (Skeleton Application).
+* **Linguagem:** PHP ^8.2.
+* **Ferramentas de Desenvolvimento:** Laravel Sail (Docker), Pint (Linting) e Pest/PHPUnit (Testes).
+* **Arquitetura:** Estrutura MVC nativa do Laravel com carregamento PSR-4 para classes do diretório `app/`.
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+## 👥 Perfis de Acesso
 
-## Learning Laravel
+[cite_start]O ecossistema divide as funcionalidades para atender às necessidades específicas de cada ator[cite: 2, 4]:
+* [cite_start]**Área do Professor/Coordenador:** Gestão de turmas, cadastro criterioso de temas e monitoramento de progresso por etapa[cite: 4].
+* [cite_start]**Área do Aluno:** Ingressar em grupos via código, visualização do sorteio online em tempo real e histórico de submissões[cite: 4, 5].
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework. You can also check out [Laravel Learn](https://laravel.com/learn), where you will be guided through building a modern Laravel application.
+## 🚀 Instruções de Configuração
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+Como o repositório já se encontra configurado e versionado, para rodar o ambiente de desenvolvimento localmente, utilize:
 
-## Laravel Sponsors
-
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
-
-### Premium Partners
-
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
-
-## Contributing
-
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
-
-## Code of Conduct
-
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
-
-## Security Vulnerabilities
-
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
-
-## License
-
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+```bash
+# Instalação de dependências e configuração de ambiente
+composer install
+cp .env.example .env
+php artisan key:generate
+php artisan migrate
