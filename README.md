@@ -7,6 +7,26 @@
 <a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
 </p>
 
+---
+
+# TCC Fácil - Sistema de Sorteio e Acompanhamento de Temas
+
+## 📖 Sobre o Projeto
+O **TCC Fácil** é uma aplicação web desenvolvida para simplificar e automatizar a gestão inicial e o acompanhamento de Trabalhos de Conclusão de Curso. Ele permite o cadastro de turmas, sorteio automático e imparcial de temas e o acompanhamento estruturado por etapas (Definição, Fundamentação, Desenvolvimento e Entrega Final).
+
+## ✅ Status de Entrega (3ª Etapa)
+Este repositório foi estruturado para cumprir os requisitos de infraestrutura inicial:
+- [x] **Projeto Laravel criado:** Framework Laravel v12 instalado e inicializado.
+- [x] **Repositório configurado:** Versionamento Git ativado e espelhado no GitHub/GitLab.
+- [x] **Commits organizados:** Estrutura inicial submetida com versionamento lógico.
+- [x] **README do projeto:** Documentação atualizada com as informações do escopo.
+
+## 👥 Autores
+* Arthur Rangel Copetti
+* Gualter Brandão
+
+---
+
 ## About Laravel
 
 Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
