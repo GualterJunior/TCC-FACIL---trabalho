@@ -15,9 +15,11 @@ use App\Http\Controllers\ValidacaoController;
 
 
 Route::get('/', function () {
-    return response()->json([
-        'message' => 'TCC FACIL WEB ONLINE'
-    ]);
+    return view('auth.login'); // Abre a página e login
+});
+
+Route::get('/dashboard', function (){
+    return view('dashboard'); // Abre o painel principal
 });
 
 Route::resource('users', UserController::class);
