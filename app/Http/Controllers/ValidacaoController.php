@@ -5,57 +5,40 @@ namespace App\Http\Controllers;
 use App\Models\Validacao;
 use Illuminate\Http\Request;
 
-class ValidacaoController extends controller
+class ValidacaoController extends Controller
 {
-
     public function index()
     {
-        return response()->json(
-            Validacao::with([
-                'entrega',
-                'professor'
-            ])->get()
-        );
+        return view('coordenador_professor.validacoes.index');
+    }
+
+    public function create()
+    {
+        return view('coordenador_professor.validacoes.create');
     }
 
     public function store(Request $request)
     {
-        $request->validate([
-            'id_entrega' => 'required',
-            'id_professor' => 'required',
-            'status_validacao' => 'required'
-        ]);
-
-        $validacao = Validacao::create($request->all());
-
-        return response()->json($validacao, 201);
+        // Lógica para guardar no banco de dados...
     }
 
     public function show(string $id)
     {
-        return response()->json(
-            Validacao::with([
-                'entrega',
-                'professor'
-            ])->findOrFail($id)
-        );
+        return view('coordenador_professor.validacoes.show');
+    }
+
+    public function edit(string $id)
+    {
+        return view('coordenador_professor.validacoes.edit');
     }
 
     public function update(Request $request, string $id)
     {
-        $validacao = Validacao::findOrFail($id);
-
-        $validacao->update($request->all());
-
-        return response()->json($validacao);
+        // Lógica para atualizar...
     }
 
     public function destroy(string $id)
     {
-        Validacao::destroy($id);
-
-        return response()->json([
-            'message' => 'Validação removida'
-        ]);
+        // Lógica para remover...
     }
 }

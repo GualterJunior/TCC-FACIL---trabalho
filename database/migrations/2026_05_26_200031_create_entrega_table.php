@@ -1,0 +1,33 @@
+<?php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+return new class extends Migration
+{
+    /**
+     * Run the migrations.
+     */
+    public function up(): void
+    {
+        Schema::create('entrega', function (Blueprint $table) {
+            $table->id('id_entrega'); // Chave primária
+            $table->foreignId('id_grupo'); // Relacionamento com Grupo
+            $table->foreignId('id_etapa'); // Relacionamento com Etapa
+            $table->string('nome_arquivo');
+            $table->string('caminho_arquivo');
+            $table->string('status_Entrega')->default('enviado');
+            $table->text('observacao')->nullable();
+            $table->timestamps();
+        });
+    }
+
+    /**
+     * Reverse the migrations.
+     */
+    public function down(): void
+    {
+        Schema::dropIfExists('entrega');
+    }
+};

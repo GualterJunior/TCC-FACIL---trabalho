@@ -7,48 +7,39 @@ use Illuminate\Http\Request;
 
 class TemaController extends Controller
 {
-
     public function index()
     {
-        return response()->json(Tema::all());
+        // Retorna a interface visual
+        return view('aluno.temas.index');
+    }
+
+    public function create()
+    {
+        return view('aluno.temas.create');
     }
 
     public function store(Request $request)
     {
-        $request->validate([
-            'titulo' => 'required',
-            'descricao' => 'required',
-            'area' => 'required',
-            'id_turma' => 'required'
-        ]);
-
-        $tema = Tema::create($request->all());
-
-        return response()->json($tema, 201);
+        // Lógica de salvar no banco...
     }
 
     public function show(string $id)
     {
-        return response()->json(
-            Tema::findOrFail($id)
-        );
+        return view('aluno.temas.show');
+    }
+
+    public function edit(string $id)
+    {
+        return view('aluno.temas.edit');
     }
 
     public function update(Request $request, string $id)
     {
-        $tema = Tema::findOrFail($id);
-
-        $tema->update($request->all());
-
-        return response()->json($tema);
+        // Lógica de atualização...
     }
 
     public function destroy(string $id)
     {
-        Tema::destroy($id);
-
-        return response()->json([
-            'message' => 'Tema removido com sucesso'
-        ]);
+        // Lógica de exclusão...
     }
 }

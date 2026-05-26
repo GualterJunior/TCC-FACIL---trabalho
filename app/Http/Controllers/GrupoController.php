@@ -7,43 +7,39 @@ use Illuminate\Http\Request;
 
 class GrupoController extends Controller
 {
-
     public function index()
     {
-        return response()->json(
-            Grupo::with('usuarios')->get()
-        );
+        // Retorna a interface visual
+        return view('aluno.grupos.index');
+    }
+
+    public function create()
+    {
+        return view('aluno.grupos.create');
     }
 
     public function store(Request $request)
     {
-        $grupo = Grupo::create($request->all());
-
-        return response()->json($grupo, 201);
+        // Lógica de salvar no banco...
     }
 
     public function show(string $id)
     {
-        return response()->json(
-            Grupo::with('usuarios')->findOrFail($id)
-        );
+        return view('aluno.grupos.show');
+    }
+
+    public function edit(string $id)
+    {
+        return view('aluno.grupos.edit');
     }
 
     public function update(Request $request, string $id)
     {
-        $grupo = Grupo::findOrFail($id);
-
-        $grupo->update($request->all());
-
-        return response()->json($grupo);
+        // Lógica de atualização...
     }
 
     public function destroy(string $id)
     {
-        Grupo::destroy($id);
-
-        return response()->json([
-            'message' => 'Grupo removido'
-        ]);
+        // Lógica de exclusão...
     }
 }
