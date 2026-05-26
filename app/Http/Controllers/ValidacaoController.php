@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Validacao;
 use Illuminate\Http\Request;
 
-class ValidacaoController extends Controller
+class ValidacaoController extends controller
 {
 
     public function index()
