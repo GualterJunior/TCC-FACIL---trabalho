@@ -7,16 +7,10 @@ use Illuminate\Http\Request;
 
 class EntregaController extends Controller
 {
-
     public function index()
     {
-        return response()->json(
-            Entrega::with([
-                'grupo',
-                'etapa',
-                'validacoes'
-            ])->get()
-        );
+        $entregas = Entrega::with(['grupo', 'etapa', 'validacoes'])->get();
+        return view('entregas.index', compact('entregas'));
     }
 
     public function store(Request $request)
@@ -37,33 +31,26 @@ class EntregaController extends Controller
             'observacao' => $request->observacao
         ]);
 
-        return response()->json($entrega, 201);
+        return redirect()->route('entregas.index')->with('success', 'Entrega enviada!');
     }
 
     public function show(string $id)
     {
         return response()->json(
-            Entrega::with([
-                'grupo',
-                'etapa',
-                'validacoes'
-            ])->findOrFail($id)
+            Entrega::with(['grupo', 'etapa', 'validacoes'])->findOrFail($id)
         );
     }
 
     public function update(Request $request, string $id)
     {
         $entrega = Entrega::findOrFail($id);
-
         $entrega->update($request->all());
-
         return response()->json($entrega);
     }
 
     public function destroy(string $id)
     {
         Entrega::destroy($id);
-
         return response()->json([
             'message' => 'Entrega removida com sucesso'
         ]);

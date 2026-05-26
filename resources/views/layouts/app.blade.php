@@ -1,37 +1,24 @@
-<!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
-<head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>TCC Fácil - Sistema de Sorteio</title>
+@extends('layouts.app')
+
+@section('content')
+<div class="bg-white p-6 rounded-lg shadow">
+    <h1 class="text-2xl font-bold mb-4">Minhas Entregas</h1>
     
-    @vite(['resources/css/app.css', 'resources/js/app.js'])
-</head>
-<body class="bg-gray-100 font-sans antialiased text-gray-900">
-
-    <nav class="bg-indigo-700 shadow-lg">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex justify-between h-16">
-                <div class="flex items-center">
-                    <span class="text-white text-xl font-bold tracking-wider">🎓 TCC Fácil</span>
-                </div>
-                <div class="flex items-center space-x-4">
-                    <a href="/dashboard" class="text-indigo-100 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Dashboard</a>
-                    <a href="/temas" class="text-indigo-100 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Temas</a>
-                    <a href="/entregas" class="text-indigo-100 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Entregas</a>
-                    <a href="/" class="bg-indigo-800 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-indigo-900">Sair</a>
-                </div>
-            </div>
-        </div>
-    </nav>
-
-    <main class="max-w-7xl mx-auto py-10 px-4 sm:px-6 lg:px-8">
-        @yield('content')
-    </main>
-
-    <footer class="text-center py-6 text-gray-500 text-sm">
-        &copy; {{ date('Y') }} TCC Fácil. Todos os direitos reservados.
-    </footer>
-
-</body>
-</html>
+    <table class="min-w-full divide-y divide-gray-200">
+        <thead class="bg-gray-50">
+            <tr>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Arquivo</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Status</th>
+            </tr>
+        </thead>
+        <tbody class="bg-white divide-y divide-gray-200">
+            @foreach($entregas as $entrega)
+            <tr>
+                <td class="px-6 py-4">{{ $entrega->nome_arquivo }}</td>
+                <td class="px-6 py-4">{{ $entrega->status_entrega }}</td>
+            </tr>
+            @endforeach
+        </tbody>
+    </table>
+</div>
+@endsection

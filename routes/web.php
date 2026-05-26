@@ -22,6 +22,14 @@ Route::get('/dashboard', function (){
     return view('dashboard'); // Abre o painel principal
 });
 
+Route::get('/sorteios-lista', function (){
+    return view('sorteios');
+});
+
+Route::get('/entregas', function(){
+    return view('entregas');
+});
+
 Route::resource('users', UserController::class);
 
 Route::resource('turmas', TurmaController::class);
