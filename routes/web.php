@@ -13,17 +13,17 @@ use App\Http\Controllers\NotaController;
 use App\Http\Controllers\SorteioController;
 use App\Http\Controllers\ValidacaoController;
 
-// 1. Rota Principal: Redireciona quem acessa a raiz (localhost:8000) para o dashboard
+
 Route::get('/', function () {
     return redirect('/aluno/dashboard');
 });
 
-// 2. Rota do Dashboard: Exibe a interface visual que você criou
+
 Route::get('/aluno/dashboard', function () {
     return view('aluno.dashboard');
 });
 
-// Rotas de Recursos para o CRUD do Sistema
+
 Route::resource('users', UserController::class);
 
 Route::resource('turmas', TurmaController::class);
