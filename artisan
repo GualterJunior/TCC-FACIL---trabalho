@@ -6,12 +6,140 @@ use Symfony\Component\Console\Input\ArgvInput;
 
 define('LARAVEL_START', microtime(true));
 
+function tccFacilIsServeCommand(array $arguments): bool
+{
+    return ($arguments[1] ?? null) === 'serve';
+}
+
+function tccFacilRunShell(string $command): void
+{
+    echo PHP_EOL.'> '.$command.PHP_EOL;
+    passthru($command, $status);
+
+    if ($status !== 0) {
+        fwrite(STDERR, PHP_EOL.'Nao foi possivel concluir: '.$command.PHP_EOL);
+        exit($status);
+    }
+}
+
+function tccFacilSqliteScanDir(): string
+{
+    return __DIR__.DIRECTORY_SEPARATOR.'.php-ini-scan';
+}
+
+function tccFacilEnableBundledSqliteForNextPhpProcess(): void
+{
+    $scanDir = tccFacilSqliteScanDir();
+
+    if (! is_dir($scanDir)) {
+        return;
+    }
+
+    putenv('PHP_INI_SCAN_DIR='.$scanDir);
+    $_ENV['PHP_INI_SCAN_DIR'] = $scanDir;
+    $_SERVER['PHP_INI_SCAN_DIR'] = $scanDir;
+}
+
+function tccFacilRestartWithSqliteIfNeeded(array $arguments): void
+{
+    if (in_array('sqlite', PDO::getAvailableDrivers(), true)) {
+        return;
+    }
+
+    if (getenv('TCC_FACIL_SQLITE_BOOTSTRAPPED') === '1') {
+        return;
+    }
+
+    $scanDir = tccFacilSqliteScanDir();
+
+    if (! file_exists($scanDir.DIRECTORY_SEPARATOR.'sqlite.ini')) {
+        return;
+    }
+
+    tccFacilEnableBundledSqliteForNextPhpProcess();
+    putenv('TCC_FACIL_SQLITE_BOOTSTRAPPED=1');
+    $_ENV['TCC_FACIL_SQLITE_BOOTSTRAPPED'] = '1';
+
+    $command = escapeshellarg(PHP_BINARY);
+
+    foreach ($arguments as $argument) {
+        $command .= ' '.escapeshellarg($argument);
+    }
+
+    passthru($command, $status);
+    exit($status);
+}
+
+function tccFacilPrepareFiles(): void
+{
+    $basePath = __DIR__;
+
+    if (! file_exists($basePath.'/.env') && file_exists($basePath.'/.env.example')) {
+        copy($basePath.'/.env.example', $basePath.'/.env');
+    }
+
+    if (! is_dir($basePath.'/database')) {
+        mkdir($basePath.'/database', 0777, true);
+    }
+
+    if (! file_exists($basePath.'/database/database.sqlite')) {
+        touch($basePath.'/database/database.sqlite');
+    }
+}
+
+function tccFacilEnvValueIsEmpty(string $key): bool
+{
+    $envPath = __DIR__.'/.env';
+
+    if (! file_exists($envPath)) {
+        return true;
+    }
+
+    $content = file_get_contents($envPath);
+
+    if (! preg_match('/^'.preg_quote($key, '/').'=(.*)$/m', $content, $matches)) {
+        return true;
+    }
+
+    return trim($matches[1], " \t\n\r\0\x0B\"'") === '';
+}
+
+$tccFacilShouldPrepareServe = tccFacilIsServeCommand($argv);
+
+if ($tccFacilShouldPrepareServe) {
+    tccFacilRestartWithSqliteIfNeeded($argv);
+    tccFacilEnableBundledSqliteForNextPhpProcess();
+    tccFacilPrepareFiles();
+
+    if (! file_exists(__DIR__.'/vendor/autoload.php')) {
+        tccFacilRunShell('composer install');
+    }
+}
+
 // Register the Composer autoloader...
 require __DIR__.'/vendor/autoload.php';
 
 // Bootstrap Laravel and handle the command...
 /** @var Application $app */
 $app = require_once __DIR__.'/bootstrap/app.php';
+
+if ($tccFacilShouldPrepareServe) {
+    if (class_exists(\Illuminate\Foundation\Console\ServeCommand::class)) {
+        \Illuminate\Foundation\Console\ServeCommand::$passthroughVariables[] = 'PHP_INI_SCAN_DIR';
+        \Illuminate\Foundation\Console\ServeCommand::$passthroughVariables[] = 'TCC_FACIL_SQLITE_BOOTSTRAPPED';
+    }
+
+    if (tccFacilEnvValueIsEmpty('APP_KEY')) {
+        $app->handleCommand(new ArgvInput(['artisan', 'key:generate', '--force']));
+    }
+
+    $app->handleCommand(new ArgvInput(['artisan', 'optimize:clear']));
+    $app->handleCommand(new ArgvInput(['artisan', 'migrate', '--force']));
+
+    if (! file_exists(__DIR__.'/public/storage')) {
+        $app->handleCommand(new ArgvInput(['artisan', 'storage:link', '--force']));
+    }
+}
 
 $status = $app->handleCommand(new ArgvInput);
 
