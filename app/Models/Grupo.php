@@ -35,12 +35,8 @@ class Grupo extends Model
             'id_usuario'
         );
     }
-  
-<<<<<<< HEAD
-    public function Entrega()
-=======
+
     public function entregas()
->>>>>>> 89fa71c (correção de bugs)
     {
         return $this->hasMany(Entrega::class, 'id_grupo');
     }

@@ -12,11 +12,6 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('entrega', function (Blueprint $table) {
-<<<<<<< HEAD
-            $table->id('id_entrega'); // Chave primária
-            $table->foreignId('id_grupo'); // Relacionamento com Grupo
-            $table->foreignId('id_etapa'); // Relacionamento com Etapa
-=======
             $table->id('id_entrega');
             $table->foreignId('id_grupo')
                 ->constrained('grupos', 'id_grupo')
@@ -24,7 +19,6 @@ return new class extends Migration
             $table->foreignId('id_etapa')
                 ->constrained('etapas', 'id_etapa')
                 ->onDelete('cascade');
->>>>>>> 89fa71c (correção de bugs)
             $table->string('nome_arquivo');
             $table->string('caminho_arquivo');
             $table->string('status_Entrega')->default('enviado');

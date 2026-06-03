@@ -24,11 +24,7 @@
             <dd class="col-sm-9">{{ $record->getKey() }}</dd>
 
             @foreach ($fields as $name => $field)
-<<<<<<< HEAD
-                @php($value = $record->{$name})
-=======
                 @php($value = $record->{$name} ?? null)
->>>>>>> 89fa71c (correção de bugs)
                 <dt class="col-sm-3">{{ $field['label'] }}</dt>
                 <dd class="col-sm-9">
                     @if (($field['type'] ?? 'text') === 'file' && $value)

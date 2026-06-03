@@ -15,12 +15,8 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
-<<<<<<< HEAD
         'tipo',
         'status_usuario'
-=======
-        'tipo'
->>>>>>> 89fa71c (correção de bugs)
     ];
 
     protected $hidden = [
@@ -28,13 +24,10 @@ class User extends Authenticatable
         'remember_token',
     ];
 
-    protected function casts(): array
-    {
-        return [
-            'email_verified_at' => 'datetime',
-            'password' => 'hashed',
-        ];
-    }
+    protected $casts = [
+        'email_verified_at' => 'datetime',
+        'password' => 'hashed',
+    ];
 
 
     public function turmas()
