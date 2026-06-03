@@ -125,6 +125,15 @@ As principais tabelas criadas pelas migrations incluem:
 
 ## Dados de teste
 
+Ao iniciar o projeto com `php artisan serve`, um coordenador padrão é criado automaticamente, caso ainda não exista:
+
+```text
+coordenador@tccfacil.com
+password
+```
+
+Use esse acesso para entrar na área administrativa logo após clonar o projeto. Por segurança, altere a senha em um ambiente real.
+
 Para popular o banco com usuários e exemplos:
 
 ```bash

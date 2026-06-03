@@ -126,6 +126,22 @@ function tccFacilEnvValueIsEmpty(string $key): bool
     return trim($matches[1], " \t\n\r\0\x0B\"'") === '';
 }
 
+function tccFacilEnsureDefaultCoordinator(): void
+{
+    if (! class_exists(\App\Models\User::class) || ! \Illuminate\Support\Facades\Schema::hasTable('users')) {
+        return;
+    }
+
+    \App\Models\User::firstOrCreate(
+        ['email' => 'coordenador@tccfacil.com'],
+        [
+            'name' => 'Coordenador TCC Fácil',
+            'tipo' => 'coordenador',
+            'password' => \Illuminate\Support\Facades\Hash::make('password'),
+        ]
+    );
+}
+
 $tccFacilShouldPrepareServe = tccFacilIsServeCommand($argv);
 
 tccFacilRestartWithSqliteIfNeeded($argv);
@@ -182,6 +198,7 @@ if ($tccFacilShouldPrepareServe) {
 
     $app->handleCommand(new ArgvInput(['artisan', 'optimize:clear']));
     $app->handleCommand(new ArgvInput(['artisan', 'migrate', '--force']));
+    tccFacilEnsureDefaultCoordinator();
 
     if (! file_exists(__DIR__.'/public/storage')) {
         $app->handleCommand(new ArgvInput(['artisan', 'storage:link', '--force']));
