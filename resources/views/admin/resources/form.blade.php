@@ -34,7 +34,7 @@
                             </select>
                         @elseif ($type === 'file')
                             <input class="form-control @error($name) is-invalid @enderror" id="{{ $name }}" name="{{ $name }}" type="file" accept="{{ $field['accept'] ?? '' }}">
-                            @if ($record?->{$name})
+                            @if ($record && $record->{$name})
                                 <div class="form-text">
                                     Arquivo atual: <a href="{{ asset('storage/'.$record->{$name}) }}" target="_blank">abrir</a>
                                 </div>

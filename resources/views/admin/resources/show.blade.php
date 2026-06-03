@@ -24,7 +24,7 @@
             <dd class="col-sm-9">{{ $record->getKey() }}</dd>
 
             @foreach ($fields as $name => $field)
-                @php($value = $record->{$name})
+                @php($value = $record->{$name} ?? null)
                 <dt class="col-sm-3">{{ $field['label'] }}</dt>
                 <dd class="col-sm-9">
                     @if (($field['type'] ?? 'text') === 'file' && $value)

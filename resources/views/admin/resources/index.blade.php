@@ -41,7 +41,7 @@
                     <tr>
                         <td>{{ $record->getKey() }}</td>
                         @foreach ($fields as $name => $field)
-                            @php($value = $record->{$name})
+                            @php($value = $record->{$name} ?? null)
                             <td>
                                 @if (($field['type'] ?? 'text') === 'file' && $value)
                                     <a href="{{ asset('storage/'.$value) }}" target="_blank">Ver arquivo</a>

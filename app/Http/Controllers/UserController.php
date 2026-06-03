@@ -18,7 +18,7 @@ class UserController extends AdminResourceController
     {
         return [
             'name' => ['label' => 'Nome', 'type' => 'text', 'rules' => ['required', 'string', 'max:255']],
-            'email' => ['label' => 'E-mail', 'type' => 'email', 'rules' => ['required', 'email', 'max:255', 'unique:users,email']],
+            'email' => ['label' => 'E-mail', 'type' => 'email', 'rules' => ['required', 'email', 'max:255']],
             'tipo' => ['label' => 'Perfil', 'type' => 'select', 'rules' => ['required', Rule::in(['aluno', 'professor', 'coordenador'])], 'options' => [
                 'aluno' => 'Aluno',
                 'professor' => 'Professor',

@@ -112,7 +112,7 @@ abstract class AdminResourceController extends Controller
     {
         $model = $this->modelClass;
 
-        return $model::findOrFail($id);
+        return $model::where($this->primaryKey, $id)->firstOrFail();
     }
 
     protected function viewData(array $extra = []): array

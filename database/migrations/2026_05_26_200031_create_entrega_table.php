@@ -12,9 +12,13 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('entrega', function (Blueprint $table) {
-            $table->id('id_entrega'); // Chave primária
-            $table->foreignId('id_grupo'); // Relacionamento com Grupo
-            $table->foreignId('id_etapa'); // Relacionamento com Etapa
+            $table->id('id_entrega');
+            $table->foreignId('id_grupo')
+                ->constrained('grupos', 'id_grupo')
+                ->onDelete('cascade');
+            $table->foreignId('id_etapa')
+                ->constrained('etapas', 'id_etapa')
+                ->onDelete('cascade');
             $table->string('nome_arquivo');
             $table->string('caminho_arquivo');
             $table->string('status_Entrega')->default('enviado');

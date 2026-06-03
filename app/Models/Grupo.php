@@ -35,8 +35,8 @@ class Grupo extends Model
             'id_usuario'
         );
     }
-  
-    public function Entrega()
+
+    public function entregas()
     {
         return $this->hasMany(Entrega::class, 'id_grupo');
     }
