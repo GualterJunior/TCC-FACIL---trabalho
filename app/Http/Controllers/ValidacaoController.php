@@ -3,7 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Models\Entrega;
+use App\Models\ProgressoGrupo;
 use App\Models\User;
+use Illuminate\Http\Request;
 use App\Models\Validacao;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Validation\Rule;
@@ -28,6 +30,61 @@ class ValidacaoController extends AdminResourceController
             ]],
             'comentario' => ['label' => 'Comentario', 'type' => 'textarea', 'rules' => ['nullable', 'string']],
         ];
+    }
+
+    public function store(Request $request)
+    {
+        $data = $request->validate($this->rules());
+        $validacao = Validacao::create($data);
+        $this->syncDeliveryProgress($validacao);
+
+        return redirect()->route('validacoes.index')->with('success', 'Validacao cadastrada com sucesso.');
+    }
+
+    public function update(Request $request, string $id)
+    {
+        $record = Validacao::findOrFail($id);
+        $data = $request->validate($this->rules($record));
+
+        $record->update($data);
+        $this->syncDeliveryProgress($record);
+
+        return redirect()->route('validacoes.index')->with('success', 'Validacao atualizada com sucesso.');
+    }
+
+    private function syncDeliveryProgress(Validacao $validacao): void
+    {
+        $entrega = $validacao->entrega;
+
+        if (! $entrega) {
+            return;
+        }
+
+        $percentual = match ($validacao->status_validacao) {
+            'aprovado' => 100,
+            'reprovado' => 50,
+            default => 80,
+        };
+
+        ProgressoGrupo::updateOrCreate(
+            [
+                'id_grupo' => $entrega->id_grupo,
+                'id_etapa' => $entrega->id_etapa,
+            ],
+            [
+                'status_progresso' => $validacao->status_validacao,
+                'percentual' => $percentual,
+                'observacao' => $validacao->comentario,
+            ]
+        );
+
+        $entrega->update([
+            'status_Entrega' => match ($validacao->status_validacao) {
+                'aprovado' => 'aprovado',
+                'reprovado' => 'reprovado',
+                default => 'em_analise',
+            },
+        ]);
     }
 
     private function entregas(): array

@@ -45,4 +45,14 @@ class Grupo extends Model
     {
         return $this->hasMany(Nota::class, 'id_grupo');
     }
+
+    public function resultadoSorteio()
+    {
+        return $this->hasOne(ResultadoSorteio::class, 'id_grupo')->latestOfMany('id_resultado');
+    }
+
+    public function progressos()
+    {
+        return $this->hasMany(ProgressoGrupo::class, 'id_grupo');
+    }
 }

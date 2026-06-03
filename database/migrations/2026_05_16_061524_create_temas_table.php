@@ -19,6 +19,8 @@ return new class extends Migration
 
             $table->string('area');
 
+            $table->date('data_conclusao')->nullable();
+
             $table->string('status_tema')->default('disponivel');
 
             $table->foreignId('id_turma')

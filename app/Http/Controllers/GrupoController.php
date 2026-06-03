@@ -15,6 +15,23 @@ class GrupoController extends AdminResourceController
     protected string $table = 'grupos';
     protected string $primaryKey = 'id_grupo';
 
+    public function index()
+    {
+        $records = collect();
+        $tableExists = Schema::hasTable($this->table);
+
+        if ($tableExists) {
+            $user = auth()->user();
+            $isStaff = in_array(strtolower(trim((string) $user?->tipo)), ['professor', 'coordenador'], true);
+
+            $records = Grupo::when(! $isStaff, function ($query) use ($user) {
+                $query->whereHas('usuarios', fn ($usuarios) => $usuarios->where('users.id', $user->id));
+            })->latest('id_grupo')->paginate(10);
+        }
+
+        return view('admin.resources.index', $this->viewData(compact('records', 'tableExists')));
+    }
+
     protected function fields(): array
     {
         return [

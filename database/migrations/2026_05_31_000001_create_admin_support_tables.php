@@ -108,18 +108,31 @@ return new class extends Migration
                 $table->timestamps();
             });
         }
+
+        if (! Schema::hasTable('suportes')) {
+            Schema::create('suportes', function (Blueprint $table) {
+                $table->id('id_suporte');
+                $table->foreignId('id_usuario')->constrained('users')->onDelete('cascade');
+                $table->foreignId('id_turma')->nullable()->constrained('turmas', 'id_turma')->onDelete('set null');
+                $table->string('assunto');
+                $table->text('mensagem');
+                $table->string('status_suporte')->default('aberto');
+                $table->text('resposta')->nullable();
+                $table->timestamps();
+            });
+        }
     }
 
     public function down(): void
     {
         Schema::dropIfExists('correcoes');
+        Schema::dropIfExists('suportes');
         Schema::dropIfExists('validacoes');
         Schema::dropIfExists('resultado_sorteio');
         Schema::dropIfExists('sorteios');
         Schema::dropIfExists('progresso_grupo');
         Schema::dropIfExists('notas');
         Schema::dropIfExists('grupo_integrantes');
-        Schema::dropIfExists('etapas');
         Schema::dropIfExists('projetos');
     }
 };

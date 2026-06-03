@@ -22,15 +22,28 @@
                 <li class="nav-item">
                     <a class="nav-link {{ request()->routeIs('temas.*') ? 'active' : '' }}" href="{{ route('temas.index') }}">Temas</a>
                 </li>
+                @unless ($isStaff)
+                    <li class="nav-item">
+                        <a class="nav-link {{ request()->routeIs('aluno.meu-tcc.*') ? 'active' : '' }}" href="{{ route('aluno.meu-tcc.index') }}">Meu TCC</a>
+                    </li>
+                @endunless
                 <li class="nav-item">
                     <a class="nav-link {{ request()->routeIs('entregas.*') ? 'active' : '' }}" href="{{ route('entregas.index') }}">Entregas</a>
                 </li>
+                <li class="nav-item">
+                    <a class="nav-link {{ request()->routeIs('sorteios.historico') ? 'active' : '' }}" href="{{ route('sorteios.historico') }}">Historico</a>
+                </li>
+                @unless ($isStaff)
+                    <li class="nav-item">
+                        <a class="nav-link {{ request()->routeIs('aluno.turmas.*') ? 'active' : '' }}" href="{{ route('aluno.turmas.index') }}">Turmas</a>
+                    </li>
+                @endunless
                 @if ($isStaff)
                     <li class="nav-item">
                         <a class="nav-link {{ request()->routeIs('turmas.*') ? 'active' : '' }}" href="{{ route('turmas.index') }}">Turmas</a>
                     </li>
                     <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle {{ request()->routeIs('etapas.*') || request()->routeIs('notas.*') || request()->routeIs('sorteios.*') || request()->routeIs('validacoes.*') ? 'active' : '' }}" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        <a class="nav-link dropdown-toggle {{ request()->routeIs('etapas.*') || request()->routeIs('notas.*') || request()->routeIs('sorteios.*') || request()->routeIs('validacoes.*') || request()->routeIs('acompanhamento.*') ? 'active' : '' }}" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                             Avaliacoes
                         </a>
                         <ul class="dropdown-menu">
@@ -38,12 +51,16 @@
                             <li><a class="dropdown-item" href="{{ route('notas.index') }}">Lancar notas</a></li>
                             <li><a class="dropdown-item" href="{{ route('etapas.index') }}">Etapas</a></li>
                             <li><a class="dropdown-item" href="{{ route('sorteios.index') }}">Sorteios</a></li>
+                            <li><a class="dropdown-item" href="{{ route('acompanhamento.index') }}">Acompanhamento</a></li>
                         </ul>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link {{ request()->routeIs('users.*') ? 'active' : '' }}" href="{{ route('users.index') }}">Usuarios</a>
                     </li>
                 @endif
+                <li class="nav-item">
+                    <a class="nav-link {{ request()->routeIs('suportes.*') ? 'active' : '' }}" href="{{ route('suportes.index') }}">Suporte</a>
+                </li>
             </ul>
 
             <div class="dropdown">

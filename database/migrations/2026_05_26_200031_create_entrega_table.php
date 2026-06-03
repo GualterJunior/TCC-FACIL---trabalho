@@ -11,6 +11,20 @@ return new class extends Migration
      */
     public function up(): void
     {
+        if (! Schema::hasTable('etapas')) {
+            Schema::create('etapas', function (Blueprint $table) {
+                $table->id('id_etapa');
+                $table->string('nome_etapa');
+                $table->text('descricao')->nullable();
+                $table->date('prazo_entrega');
+                $table->unsignedInteger('ordem_etapa')->default(1);
+                $table->foreignId('id_turma')
+                    ->constrained('turmas', 'id_turma')
+                    ->onDelete('cascade');
+                $table->timestamps();
+            });
+        }
+
         Schema::create('entrega', function (Blueprint $table) {
             $table->id('id_entrega');
             $table->foreignId('id_grupo')
@@ -33,5 +47,6 @@ return new class extends Migration
     public function down(): void
     {
         Schema::dropIfExists('entrega');
+        Schema::dropIfExists('etapas');
     }
 };

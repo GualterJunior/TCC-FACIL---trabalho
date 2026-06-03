@@ -41,4 +41,14 @@ class Turma extends Model
     {
         return $this->hasMany(Etapa::class, 'id_turma');
     }
+
+    public function sorteios()
+    {
+        return $this->hasMany(Sorteio::class, 'id_turma');
+    }
+
+    public function ultimoSorteio()
+    {
+        return $this->hasOne(Sorteio::class, 'id_turma')->latestOfMany('id_sorteio');
+    }
 }

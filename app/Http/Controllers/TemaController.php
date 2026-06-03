@@ -21,6 +21,7 @@ class TemaController extends AdminResourceController
             'titulo' => ['label' => 'Titulo', 'type' => 'text', 'rules' => ['required', 'string', 'max:255']],
             'descricao' => ['label' => 'Descricao', 'type' => 'textarea', 'rules' => ['required', 'string']],
             'area' => ['label' => 'Area', 'type' => 'text', 'rules' => ['required', 'string', 'max:255']],
+            'data_conclusao' => ['label' => 'Data de conclusao', 'type' => 'date', 'rules' => ['nullable', 'date']],
             'status_tema' => ['label' => 'Status', 'type' => 'select', 'rules' => ['required', Rule::in(['disponivel', 'reservado', 'aprovado'])], 'options' => [
                 'disponivel' => 'Disponivel',
                 'reservado' => 'Reservado',

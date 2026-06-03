@@ -15,11 +15,12 @@ class Tema extends Model
 
     protected $fillable = [
         'titulo',
-        'descricao',
-        'area',
-        'status_tema',
-        'id_turma'
-    ];
+            'descricao',
+            'area',
+            'data_conclusao',
+            'status_tema',
+            'id_turma'
+        ];
 
     public function turma()
     {

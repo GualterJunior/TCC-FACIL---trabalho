@@ -41,6 +41,11 @@ class Entrega extends Model
         return $this->hasMany(Validacao::class, 'id_entrega');
     }
 
+    public function ultimaValidacao()
+    {
+        return $this->hasOne(Validacao::class, 'id_entrega')->latestOfMany('id_validacao');
+    }
+
     public function correcoes()
     {
         return $this->hasMany(Correcao::class, 'id_entrega');
