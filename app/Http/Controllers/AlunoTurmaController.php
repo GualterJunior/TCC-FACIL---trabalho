@@ -8,6 +8,8 @@ use Illuminate\Http\Request;
 
 class AlunoTurmaController extends Controller
 {
+    private const LIMITE_INTEGRANTES_GRUPO = 3;
+
     public function index(Request $request)
     {
         $user = $request->user();
@@ -43,11 +45,11 @@ class AlunoTurmaController extends Controller
         $turma = Turma::where('codigo_turma', $data['codigo_turma'])->first();
 
         if (! $turma) {
-            return back()->withErrors(['codigo_turma' => 'Codigo de turma nao encontrado.']);
+            return back()->withErrors(['codigo_turma' => 'Código de turma não encontrado.']);
         }
 
         if ($turma->status_turma !== 'ativa') {
-            return back()->withErrors(['codigo_turma' => 'Esta turma nao esta ativa para entrada de alunos.']);
+            return back()->withErrors(['codigo_turma' => 'Esta turma não está ativa para entrada de alunos.']);
         }
 
         $jaEntrou = Grupo::where('id_turma', $turma->id_turma)
@@ -55,22 +57,23 @@ class AlunoTurmaController extends Controller
             ->exists();
 
         if ($jaEntrou) {
-            return redirect()->route('aluno.turmas.index')->with('success', 'Voce ja participa desta turma.');
+            return redirect()->route('aluno.turmas.index')->with('success', 'Você já participa desta turma.');
         }
 
         $grupo = Grupo::where('id_turma', $turma->id_turma)
             ->where('status_grupo', 'ativo')
             ->withCount('usuarios')
+            ->having('usuarios_count', '<', self::LIMITE_INTEGRANTES_GRUPO)
             ->orderBy('usuarios_count')
             ->orderBy('nome_grupo')
             ->first();
 
         if (! $grupo) {
-            return back()->withErrors(['codigo_turma' => 'A turma foi encontrada, mas ainda nao possui grupos ativos. Peca ao professor para criar os grupos.']);
+            return back()->withErrors(['codigo_turma' => 'A turma foi encontrada, mas não possui grupos ativos com vagas. Peça ao professor para criar ou ajustar os grupos.']);
         }
 
         $grupo->usuarios()->syncWithoutDetaching([$request->user()->id]);
 
-        return redirect()->route('aluno.turmas.index')->with('success', 'Voce entrou na turma e foi vinculado ao grupo '.$grupo->nome_grupo.'.');
+        return redirect()->route('aluno.turmas.index')->with('success', 'Você entrou na turma e foi vinculado ao grupo '.$grupo->nome_grupo.'.');
     }
 }

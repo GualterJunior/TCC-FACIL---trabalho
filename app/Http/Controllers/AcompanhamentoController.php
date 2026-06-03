@@ -24,6 +24,13 @@ class AcompanhamentoController extends Controller
             ->orderBy('nome_turma')
             ->get();
 
-        return view('coordenador_professor.acompanhamento.index', compact('turmas'));
+        $resumo = [
+            'turmas' => $turmas->count(),
+            'grupos' => $turmas->sum(fn ($turma) => $turma->grupos->count()),
+            'sem_tema' => $turmas->sum(fn ($turma) => $turma->grupos->filter(fn ($grupo) => ! $grupo->resultadoSorteio?->tema)->count()),
+            'entregas_pendentes' => $turmas->sum(fn ($turma) => $turma->grupos->sum(fn ($grupo) => $grupo->entregas->filter(fn ($entrega) => ($entrega->ultimaValidacao?->status_validacao ?? 'pendente') === 'pendente')->count())),
+        ];
+
+        return view('coordenador_professor.acompanhamento.index', compact('turmas', 'resumo'));
     }
 }

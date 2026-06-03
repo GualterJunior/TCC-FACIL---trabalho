@@ -32,7 +32,9 @@ Route::middleware('auth')->group(function () {
     Route::resource('grupos', GrupoController::class)->only(['index', 'show']);
     Route::resource('temas', TemaController::class)->only(['index', 'show']);
     Route::resource('entregas', EntregaController::class)->only(['index', 'create', 'store', 'show']);
+    Route::post('entregas/{entrega}/reenviar', [EntregaController::class, 'reenviar'])->name('entregas.reenviar');
     Route::get('meu-tcc', [MeuTccController::class, 'index'])->name('aluno.meu-tcc.index');
+    Route::get('minhas-notas', [NotaController::class, 'minhas'])->name('aluno.notas.index');
     Route::get('minhas-turmas', [AlunoTurmaController::class, 'index'])->name('aluno.turmas.index');
     Route::post('minhas-turmas/entrar', [AlunoTurmaController::class, 'entrar'])->name('aluno.turmas.entrar');
     Route::get('historico-sorteios', [HistoricoSorteioController::class, 'index'])->name('sorteios.historico');

@@ -26,10 +26,28 @@ class GrupoController extends AdminResourceController
 
             $records = Grupo::when(! $isStaff, function ($query) use ($user) {
                 $query->whereHas('usuarios', fn ($usuarios) => $usuarios->where('users.id', $user->id));
-            })->latest('id_grupo')->paginate(10);
+            })
+                ->with(['turma', 'usuarios', 'resultadoSorteio.tema', 'progressos.etapa', 'entregas.etapa', 'entregas.ultimaValidacao', 'notas.professor'])
+                ->latest('id_grupo')
+                ->paginate(10);
         }
 
-        return view('admin.resources.index', $this->viewData(compact('records', 'tableExists')));
+        return view('grupos.index', $this->viewData(compact('records', 'tableExists', 'isStaff')));
+    }
+
+    public function show(string $id)
+    {
+        $user = auth()->user();
+        $isStaff = in_array(strtolower(trim((string) $user?->tipo)), ['professor', 'coordenador'], true);
+
+        $grupo = Grupo::with(['turma.etapas', 'usuarios', 'resultadoSorteio.tema', 'progressos.etapa', 'entregas.etapa', 'entregas.ultimaValidacao', 'notas.professor'])
+            ->when(! $isStaff, function ($query) use ($user) {
+                $query->whereHas('usuarios', fn ($usuarios) => $usuarios->where('users.id', $user->id));
+            })
+            ->where('id_grupo', $id)
+            ->firstOrFail();
+
+        return view('grupos.show', compact('grupo', 'isStaff'));
     }
 
     protected function fields(): array

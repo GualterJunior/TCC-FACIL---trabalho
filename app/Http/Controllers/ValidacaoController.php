@@ -2,11 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Correcao;
 use App\Models\Entrega;
 use App\Models\ProgressoGrupo;
 use App\Models\User;
-use Illuminate\Http\Request;
 use App\Models\Validacao;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Validation\Rule;
 
@@ -14,9 +15,18 @@ class ValidacaoController extends AdminResourceController
 {
     protected string $modelClass = Validacao::class;
     protected string $routeName = 'validacoes';
-    protected string $title = 'Validacao';
+    protected string $title = 'Validação';
     protected string $table = 'validacoes';
     protected string $primaryKey = 'id_validacao';
+
+    public function index()
+    {
+        $entregas = Entrega::with(['grupo.turma', 'grupo.usuarios', 'etapa', 'ultimaValidacao.professor', 'correcoes.professor'])
+            ->latest('id_entrega')
+            ->paginate(10);
+
+        return view('validacoes.index', compact('entregas'));
+    }
 
     protected function fields(): array
     {
@@ -28,7 +38,7 @@ class ValidacaoController extends AdminResourceController
                 'aprovado' => 'Aprovado',
                 'reprovado' => 'Reprovado',
             ]],
-            'comentario' => ['label' => 'Comentario', 'type' => 'textarea', 'rules' => ['nullable', 'string']],
+            'comentario' => ['label' => 'Comentário', 'type' => 'textarea', 'rules' => ['nullable', 'string']],
         ];
     }
 
@@ -37,8 +47,9 @@ class ValidacaoController extends AdminResourceController
         $data = $request->validate($this->rules());
         $validacao = Validacao::create($data);
         $this->syncDeliveryProgress($validacao);
+        $this->createCorrectionHistory($validacao);
 
-        return redirect()->route('validacoes.index')->with('success', 'Validacao cadastrada com sucesso.');
+        return redirect()->route('validacoes.index')->with('success', 'Validação cadastrada com sucesso.');
     }
 
     public function update(Request $request, string $id)
@@ -48,8 +59,9 @@ class ValidacaoController extends AdminResourceController
 
         $record->update($data);
         $this->syncDeliveryProgress($record);
+        $this->createCorrectionHistory($record);
 
-        return redirect()->route('validacoes.index')->with('success', 'Validacao atualizada com sucesso.');
+        return redirect()->route('validacoes.index')->with('success', 'Validação atualizada com sucesso.');
     }
 
     private function syncDeliveryProgress(Validacao $validacao): void
@@ -87,6 +99,16 @@ class ValidacaoController extends AdminResourceController
         ]);
     }
 
+    private function createCorrectionHistory(Validacao $validacao): void
+    {
+        Correcao::create([
+            'id_entrega' => $validacao->id_entrega,
+            'id_professor' => $validacao->id_professor,
+            'status_correcao' => $validacao->status_validacao,
+            'comentario' => $validacao->comentario ?: 'Validação registrada sem comentário.',
+        ]);
+    }
+
     private function entregas(): array
     {
         if (! Schema::hasTable('entrega')) {
@@ -102,6 +124,6 @@ class ValidacaoController extends AdminResourceController
             return [];
         }
 
-        return User::orderBy('name')->pluck('name', 'id')->toArray();
+        return User::whereIn('tipo', ['professor', 'coordenador'])->orderBy('name')->pluck('name', 'id')->toArray();
     }
 }

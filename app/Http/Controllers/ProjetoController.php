@@ -15,12 +15,36 @@ class ProjetoController extends AdminResourceController
     protected string $table = 'projetos';
     protected string $primaryKey = 'id_projeto';
 
+    public function index()
+    {
+        $user = auth()->user();
+        $isStaff = in_array(strtolower(trim((string) $user?->tipo)), ['professor', 'coordenador'], true);
+
+        $projetos = Projeto::when(! $isStaff, fn ($query) => $query->where('status', 'publicado'))
+            ->latest('id_projeto')
+            ->paginate(9);
+
+        return view('projetos.index', compact('projetos', 'isStaff'));
+    }
+
+    public function show(string $id)
+    {
+        $user = auth()->user();
+        $isStaff = in_array(strtolower(trim((string) $user?->tipo)), ['professor', 'coordenador'], true);
+
+        $projeto = Projeto::when(! $isStaff, fn ($query) => $query->where('status', 'publicado'))
+            ->where('id_projeto', $id)
+            ->firstOrFail();
+
+        return view('projetos.show', compact('projeto', 'isStaff'));
+    }
+
     protected function fields(): array
     {
         return [
-            'titulo' => ['label' => 'Titulo', 'type' => 'text', 'rules' => ['required', 'string', 'max:255']],
+            'titulo' => ['label' => 'Título', 'type' => 'text', 'rules' => ['required', 'string', 'max:255']],
             'autor' => ['label' => 'Autor ou grupo', 'type' => 'text', 'rules' => ['required', 'string', 'max:255']],
-            'descricao' => ['label' => 'Descricao', 'type' => 'textarea', 'rules' => ['required', 'string']],
+            'descricao' => ['label' => 'Descrição', 'type' => 'textarea', 'rules' => ['required', 'string']],
             'status' => ['label' => 'Status', 'type' => 'select', 'rules' => ['required', Rule::in(['rascunho', 'publicado', 'arquivado'])], 'options' => [
                 'rascunho' => 'Rascunho',
                 'publicado' => 'Publicado',

@@ -2,7 +2,7 @@
     @php($isStaff = in_array(strtolower(trim((string) Auth::user()->tipo)), ['professor', 'coordenador'], true))
     <div class="container-fluid px-4">
         <a class="navbar-brand text-primary d-flex align-items-center" href="{{ route('dashboard') }}">
-            <img src="{{ asset('images/logo-tcc-facil.png') }}" alt="TCC Facil" style="height: 42px; width: auto;">
+            <img src="{{ asset('images/logo-tcc-facil.png') }}" alt="TCC Fácil" style="height: 42px; width: auto;">
         </a>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#adminNavbar" aria-controls="adminNavbar" aria-expanded="false" aria-label="Abrir menu">
             <span class="navbar-toggler-icon"></span>
@@ -30,8 +30,13 @@
                 <li class="nav-item">
                     <a class="nav-link {{ request()->routeIs('entregas.*') ? 'active' : '' }}" href="{{ route('entregas.index') }}">Entregas</a>
                 </li>
+                @unless ($isStaff)
+                    <li class="nav-item">
+                        <a class="nav-link {{ request()->routeIs('aluno.notas.*') ? 'active' : '' }}" href="{{ route('aluno.notas.index') }}">Notas</a>
+                    </li>
+                @endunless
                 <li class="nav-item">
-                    <a class="nav-link {{ request()->routeIs('sorteios.historico') ? 'active' : '' }}" href="{{ route('sorteios.historico') }}">Historico</a>
+                    <a class="nav-link {{ request()->routeIs('sorteios.historico') ? 'active' : '' }}" href="{{ route('sorteios.historico') }}">Histórico</a>
                 </li>
                 @unless ($isStaff)
                     <li class="nav-item">
@@ -44,11 +49,11 @@
                     </li>
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle {{ request()->routeIs('etapas.*') || request()->routeIs('notas.*') || request()->routeIs('sorteios.*') || request()->routeIs('validacoes.*') || request()->routeIs('acompanhamento.*') ? 'active' : '' }}" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                            Avaliacoes
+                            Avaliações
                         </a>
                         <ul class="dropdown-menu">
                             <li><a class="dropdown-item" href="{{ route('validacoes.index') }}">Validar entregas</a></li>
-                            <li><a class="dropdown-item" href="{{ route('notas.index') }}">Lancar notas</a></li>
+                            <li><a class="dropdown-item" href="{{ route('notas.index') }}">Lançar notas</a></li>
                             <li><a class="dropdown-item" href="{{ route('etapas.index') }}">Etapas</a></li>
                             <li><a class="dropdown-item" href="{{ route('sorteios.index') }}">Sorteios</a></li>
                             <li><a class="dropdown-item" href="{{ route('acompanhamento.index') }}">Acompanhamento</a></li>

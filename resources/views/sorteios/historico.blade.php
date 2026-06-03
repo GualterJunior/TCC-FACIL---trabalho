@@ -1,10 +1,10 @@
 @extends('layouts.app')
 
-@section('title', 'Historico de sorteios - TCC Facil')
+@section('title', 'Histórico de sorteios - TCC Fácil')
 
 @section('content')
 <div class="mb-4">
-    <h1 class="h3 mb-1">Historico de sorteios</h1>
+    <h1 class="h3 mb-1">Histórico de sorteios</h1>
     <p class="text-secondary mb-0">Consulta dos temas distribuidos para cada grupo.</p>
 </div>
 
@@ -16,7 +16,7 @@
                     <th>Turma</th>
                     <th>Grupo</th>
                     <th>Tema</th>
-                    <th>Area</th>
+                    <th>Área</th>
                     <th>Data</th>
                 </tr>
             </thead>

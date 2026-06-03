@@ -18,7 +18,7 @@ class EtapaController extends AdminResourceController
     {
         return [
             'nome_etapa' => ['label' => 'Nome da etapa', 'type' => 'text', 'rules' => ['required', 'string', 'max:255']],
-            'descricao' => ['label' => 'Descricao', 'type' => 'textarea', 'rules' => ['nullable', 'string']],
+            'descricao' => ['label' => 'Descrição', 'type' => 'textarea', 'rules' => ['nullable', 'string']],
             'prazo_entrega' => ['label' => 'Prazo de entrega', 'type' => 'date', 'rules' => ['required', 'date']],
             'ordem_etapa' => ['label' => 'Ordem', 'type' => 'number', 'rules' => ['required', 'integer', 'min:1']],
             'id_turma' => ['label' => 'Turma', 'type' => 'select', 'rules' => ['required', 'integer'], 'options' => $this->turmas()],

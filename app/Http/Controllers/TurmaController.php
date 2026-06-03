@@ -21,9 +21,9 @@ class TurmaController extends AdminResourceController
     {
         return [
             'nome_turma' => ['label' => 'Nome da turma', 'type' => 'text', 'rules' => ['required', 'string', 'max:255']],
-            'codigo_turma' => ['label' => 'Codigo', 'type' => 'text', 'rules' => ['nullable', 'string', 'max:255', 'unique:turmas,codigo_turma']],
+            'codigo_turma' => ['label' => 'Código', 'type' => 'text', 'rules' => ['nullable', 'string', 'max:255', 'unique:turmas,codigo_turma']],
             'semestre' => ['label' => 'Semestre', 'type' => 'text', 'rules' => ['required', 'string', 'max:50']],
-            'descricao' => ['label' => 'Descricao', 'type' => 'textarea', 'rules' => ['nullable', 'string']],
+            'descricao' => ['label' => 'Descrição', 'type' => 'textarea', 'rules' => ['nullable', 'string']],
             'status_turma' => ['label' => 'Status', 'type' => 'select', 'rules' => ['required', Rule::in(['ativa', 'inativa'])], 'options' => [
                 'ativa' => 'Ativa',
                 'inativa' => 'Inativa',
@@ -50,7 +50,7 @@ class TurmaController extends AdminResourceController
 
         Turma::create($data);
 
-        return redirect()->route('turmas.index')->with('success', 'Turma cadastrada com codigo de acesso '.$data['codigo_turma'].'.');
+        return redirect()->route('turmas.index')->with('success', 'Turma cadastrada com código de acesso '.$data['codigo_turma'].'.');
     }
 
     public function update(Request $request, string $id)

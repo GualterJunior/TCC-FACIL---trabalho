@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Acompanhamento - TCC Facil')
+@section('title', 'Acompanhamento - TCC Fácil')
 
 @section('content')
 <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-4">
@@ -11,13 +11,31 @@
     <a href="{{ route('sorteios.index') }}" class="btn btn-primary">Gerenciar sorteios</a>
 </div>
 
+<div class="row g-3 mb-4">
+    @foreach ([
+        'Turmas' => $resumo['turmas'] ?? 0,
+        'Grupos' => $resumo['grupos'] ?? 0,
+        'Grupos sem tema' => $resumo['sem_tema'] ?? 0,
+        'Entregas pendentes' => $resumo['entregas_pendentes'] ?? 0,
+    ] as $label => $valor)
+        <div class="col-sm-6 col-xl-3">
+            <div class="card shadow-sm h-100">
+                <div class="card-body">
+                    <div class="text-secondary small">{{ $label }}</div>
+                    <div class="display-6 fw-bold text-primary">{{ $valor }}</div>
+                </div>
+            </div>
+        </div>
+    @endforeach
+</div>
+
 @forelse ($turmas as $turma)
     <div class="card shadow-sm mb-4">
         <div class="card-body">
             <div class="d-flex flex-wrap justify-content-between gap-2 mb-3">
                 <div>
                     <h2 class="h4 mb-1">{{ $turma->nome_turma }}</h2>
-                    <p class="text-secondary mb-0">Codigo: {{ $turma->codigo_turma }} | {{ $turma->semestre }}</p>
+                    <p class="text-secondary mb-0">Código: {{ $turma->codigo_turma }} | {{ $turma->semestre }}</p>
                 </div>
                 <a href="{{ route('turmas.show', $turma) }}" class="btn btn-outline-secondary">Ver turma</a>
             </div>
@@ -30,8 +48,8 @@
                             <th>Integrantes</th>
                             <th>Tema</th>
                             <th>Progresso</th>
-                            <th>Ultima entrega</th>
-                            <th>Validacao</th>
+                            <th>Última entrega</th>
+                            <th>Validação</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -55,7 +73,7 @@
                                     @endforelse
                                 </td>
                                 <td>
-                                    <div>{{ $tema?->titulo ?? 'Nao sorteado' }}</div>
+                                    <div>{{ $tema?->titulo ?? 'Não sorteado' }}</div>
                                     <div class="text-secondary small">{{ $tema?->area }}</div>
                                 </td>
                                 <td>
@@ -85,6 +103,6 @@
         </div>
     </div>
 @empty
-    <div class="alert alert-info">Nenhuma turma disponivel para acompanhamento.</div>
+    <div class="alert alert-info">Nenhuma turma disponível para acompanhamento.</div>
 @endforelse
 @endsection

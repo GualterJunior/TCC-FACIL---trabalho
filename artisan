@@ -22,6 +22,28 @@ function tccFacilRunShell(string $command): void
     }
 }
 
+function tccFacilNpmCommand(): string
+{
+    return PHP_OS_FAMILY === 'Windows' ? 'npm.cmd' : 'npm';
+}
+
+function tccFacilFileMissingOrOlderThan(string $target, array $sources): bool
+{
+    if (! file_exists($target)) {
+        return true;
+    }
+
+    $targetTime = filemtime($target);
+
+    foreach ($sources as $source) {
+        if (file_exists($source) && filemtime($source) > $targetTime) {
+            return true;
+        }
+    }
+
+    return false;
+}
+
 function tccFacilSqliteScanDir(): string
 {
     return __DIR__.DIRECTORY_SEPARATOR.'.php-ini-scan';
@@ -106,13 +128,38 @@ function tccFacilEnvValueIsEmpty(string $key): bool
 
 $tccFacilShouldPrepareServe = tccFacilIsServeCommand($argv);
 
+tccFacilRestartWithSqliteIfNeeded($argv);
+tccFacilEnableBundledSqliteForNextPhpProcess();
+
 if ($tccFacilShouldPrepareServe) {
-    tccFacilRestartWithSqliteIfNeeded($argv);
-    tccFacilEnableBundledSqliteForNextPhpProcess();
     tccFacilPrepareFiles();
 
-    if (! file_exists(__DIR__.'/vendor/autoload.php')) {
+    if (tccFacilFileMissingOrOlderThan(__DIR__.'/vendor/autoload.php', [
+        __DIR__.'/composer.json',
+        __DIR__.'/composer.lock',
+    ])) {
         tccFacilRunShell('composer install');
+    }
+
+    if (file_exists(__DIR__.'/package.json')) {
+        $npm = tccFacilNpmCommand();
+
+        if (tccFacilFileMissingOrOlderThan(__DIR__.'/node_modules/.package-lock.json', [
+            __DIR__.'/package.json',
+            __DIR__.'/package-lock.json',
+        ])) {
+            tccFacilRunShell($npm.' install');
+        }
+
+        if (tccFacilFileMissingOrOlderThan(__DIR__.'/public/build/manifest.json', [
+            __DIR__.'/package.json',
+            __DIR__.'/package-lock.json',
+            __DIR__.'/vite.config.js',
+            __DIR__.'/resources/css/app.css',
+            __DIR__.'/resources/js/app.js',
+        ])) {
+            tccFacilRunShell($npm.' run build');
+        }
     }
 }
 

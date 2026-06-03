@@ -6,6 +6,7 @@ use App\Models\Entrega;
 use App\Models\Etapa;
 use App\Models\Grupo;
 use App\Models\ProgressoGrupo;
+use App\Models\Correcao;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\Storage;
@@ -28,12 +29,28 @@ class EntregaController extends AdminResourceController
             $user = auth()->user();
             $isStaff = in_array(strtolower(trim((string) $user?->tipo)), ['professor', 'coordenador'], true);
 
-            $records = Entrega::when(! $isStaff, function ($query) use ($user) {
+            $records = Entrega::with(['grupo.turma', 'grupo.usuarios', 'etapa', 'ultimaValidacao', 'correcoes.professor'])
+                ->when(! $isStaff, function ($query) use ($user) {
                 $query->whereHas('grupo.usuarios', fn ($usuarios) => $usuarios->where('users.id', $user->id));
             })->latest('id_entrega')->paginate(10);
         }
 
-        return view('admin.resources.index', $this->viewData(compact('records', 'tableExists')));
+        return view('entregas.index', $this->viewData(compact('records', 'tableExists', 'isStaff')));
+    }
+
+    public function show(string $id)
+    {
+        $user = auth()->user();
+        $isStaff = in_array(strtolower(trim((string) $user?->tipo)), ['professor', 'coordenador'], true);
+
+        $entrega = Entrega::with(['grupo.turma', 'grupo.usuarios', 'etapa', 'validacoes.professor', 'correcoes.professor'])
+            ->when(! $isStaff, function ($query) use ($user) {
+                $query->whereHas('grupo.usuarios', fn ($usuarios) => $usuarios->where('users.id', $user->id));
+            })
+            ->where('id_entrega', $id)
+            ->firstOrFail();
+
+        return view('entregas.show', compact('entrega', 'isStaff'));
     }
 
     protected function fields(): array
@@ -45,11 +62,11 @@ class EntregaController extends AdminResourceController
             'caminho_arquivo' => ['label' => 'Arquivo da etapa', 'type' => 'file', 'accept' => '.pdf,.doc,.docx,.zip,.rar', 'rules' => ['required', 'file', 'mimes:pdf,doc,docx,zip,rar', 'max:20480']],
             'status_Entrega' => ['label' => 'Status', 'type' => 'select', 'rules' => ['required', Rule::in(['enviado', 'em_analise', 'aprovado', 'reprovado'])], 'options' => [
                 'enviado' => 'Enviado',
-                'em_analise' => 'Em analise',
+                'em_analise' => 'Em análise',
                 'aprovado' => 'Aprovado',
                 'reprovado' => 'Reprovado',
             ]],
-            'observacao' => ['label' => 'Observacao', 'type' => 'textarea', 'rules' => ['nullable', 'string']],
+            'observacao' => ['label' => 'Observação', 'type' => 'textarea', 'rules' => ['nullable', 'string']],
         ];
     }
 
@@ -87,6 +104,42 @@ class EntregaController extends AdminResourceController
         return redirect()->route('entregas.index')->with('success', 'Entrega atualizada com sucesso.');
     }
 
+    public function reenviar(Request $request, string $id)
+    {
+        $entrega = Entrega::with(['grupo.usuarios', 'grupo.turma'])->findOrFail($id);
+        $user = $request->user();
+        $isStaff = in_array(strtolower(trim((string) $user?->tipo)), ['professor', 'coordenador'], true);
+        $isOwner = $entrega->grupo?->usuarios->contains('id', $user->id);
+
+        abort_unless($isStaff || $isOwner, 403);
+
+        $data = $request->validate([
+            'caminho_arquivo' => ['required', 'file', 'mimes:pdf,doc,docx,zip,rar', 'max:20480'],
+            'observacao' => ['nullable', 'string'],
+        ]);
+
+        $data = $this->storeUpload($request, array_merge($entrega->only([
+            'id_grupo',
+            'id_etapa',
+            'nome_arquivo',
+            'status_Entrega',
+            'observacao',
+        ]), $data), $entrega);
+
+        $data['status_Entrega'] = 'enviado';
+        $entrega->update($data);
+        $this->syncProgress($entrega, 'reenviado', 75, 'Entrega reenviada para nova avaliação.');
+
+        Correcao::create([
+            'id_entrega' => $entrega->id_entrega,
+            'id_professor' => $entrega->grupo?->turma?->id_professor ?? $user->id,
+            'status_correcao' => 'reenviado',
+            'comentario' => $request->input('observacao') ?: 'Arquivo reenviado pelo grupo.',
+        ]);
+
+        return redirect()->route('entregas.show', $entrega)->with('success', 'Entrega reenviada com sucesso.');
+    }
+
     private function storeUpload(Request $request, array $data, ?Entrega $record = null): array
     {
         if ($request->hasFile('caminho_arquivo')) {
@@ -104,7 +157,7 @@ class EntregaController extends AdminResourceController
         return $data;
     }
 
-    private function syncProgress(Entrega $entrega, string $status, int $percentual): void
+    private function syncProgress(Entrega $entrega, string $status, int $percentual, string $observacao = 'Entrega enviada para avaliação.'): void
     {
         ProgressoGrupo::updateOrCreate(
             [
@@ -114,7 +167,7 @@ class EntregaController extends AdminResourceController
             [
                 'status_progresso' => $status,
                 'percentual' => $percentual,
-                'observacao' => 'Entrega enviada para avaliacao.',
+                'observacao' => $observacao,
             ]
         );
     }

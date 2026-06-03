@@ -29,7 +29,7 @@ class DashboardController extends Controller
                 ['label' => 'Meu grupo', 'route' => 'grupos.index', 'count' => $this->countStudentGroups($user->id)],
                 ['label' => 'Temas', 'route' => 'temas.index', 'count' => $this->countTable('temas')],
                 ['label' => 'Minhas entregas', 'route' => 'entregas.index', 'count' => $this->countStudentDeliveries($user->id)],
-                ['label' => 'Historico de sorteios', 'route' => 'sorteios.historico', 'count' => $this->countStudentResults($user->id)],
+                ['label' => 'Histórico de sorteios', 'route' => 'sorteios.historico', 'count' => $this->countStudentResults($user->id)],
             ];
 
         return view('admin.dashboard', compact('cards', 'isStaff'));

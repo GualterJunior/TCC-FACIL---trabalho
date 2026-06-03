@@ -32,16 +32,8 @@
                     @enderror
                 </div>
 
-                <div class="mb-3">
-                    <label class="form-label" for="tipo">Tipo de acesso</label>
-                    <select class="form-select @error('tipo') is-invalid @enderror" id="tipo" name="tipo" required>
-                        <option value="aluno" @selected(old('tipo', 'aluno') === 'aluno')>Aluno</option>
-                        <option value="professor" @selected(old('tipo') === 'professor')>Professor</option>
-                        <option value="coordenador" @selected(old('tipo') === 'coordenador')>Coordenador</option>
-                    </select>
-                    @error('tipo')
-                        <div class="invalid-feedback">{{ $message }}</div>
-                    @enderror
+                <div class="alert alert-info">
+                    O cadastro público é exclusivo para alunos. Professores e coordenadores devem ser criados pela coordenação.
                 </div>
 
                 <div class="mb-3">

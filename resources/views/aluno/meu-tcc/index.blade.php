@@ -1,12 +1,12 @@
 @extends('layouts.app')
 
-@section('title', 'Meu TCC - TCC Facil')
+@section('title', 'Meu TCC - TCC Fácil')
 
 @section('content')
 <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-4">
     <div>
         <h1 class="h3 mb-1">Meu TCC</h1>
-        <p class="text-secondary mb-0">Acompanhe tema sorteado, etapas, entregas e validacoes do seu grupo.</p>
+        <p class="text-secondary mb-0">Acompanhe tema sorteado, etapas, entregas e validações do seu grupo.</p>
     </div>
     <a href="{{ route('entregas.create') }}" class="btn btn-primary">Enviar etapa</a>
 </div>
@@ -28,7 +28,7 @@
             <div class="d-flex flex-wrap justify-content-between gap-3">
                 <div>
                     <span class="text-secondary">{{ $grupo->turma?->nome_turma }} | {{ $grupo->nome_grupo }}</span>
-                    <h2 class="h4 mt-1 mb-1">{{ $tema?->titulo ?? 'Tema ainda nao sorteado' }}</h2>
+                    <h2 class="h4 mt-1 mb-1">{{ $tema?->titulo ?? 'Tema ainda não sorteado' }}</h2>
                     <p class="text-secondary mb-0">{{ $tema?->descricao ?? 'Aguarde o professor executar o sorteio.' }}</p>
                 </div>
                 <div class="text-end">
@@ -41,14 +41,14 @@
                 <div class="row g-3 mt-2">
                     <div class="col-md-4">
                         <div class="border rounded p-3 h-100">
-                            <div class="text-secondary small">Area</div>
+                            <div class="text-secondary small">Área</div>
                             <div class="fw-semibold">{{ $tema->area }}</div>
                         </div>
                     </div>
                     <div class="col-md-4">
                         <div class="border rounded p-3 h-100">
                             <div class="text-secondary small">Data de conclusao</div>
-                            <div class="fw-semibold">{{ $tema->data_conclusao ? \Illuminate\Support\Carbon::parse($tema->data_conclusao)->format('d/m/Y') : 'Nao definida' }}</div>
+                            <div class="fw-semibold">{{ $tema->data_conclusao ? \Illuminate\Support\Carbon::parse($tema->data_conclusao)->format('d/m/Y') : 'Não definida' }}</div>
                         </div>
                     </div>
                     <div class="col-md-4">
@@ -68,7 +68,7 @@
                             <th>Prazo</th>
                             <th>Status</th>
                             <th>Entrega</th>
-                            <th>Validacao</th>
+                            <th>Validação</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -91,7 +91,7 @@
                                     @if ($ultimaEntrega)
                                         <a href="{{ asset('storage/'.$ultimaEntrega->caminho_arquivo) }}" target="_blank">{{ $ultimaEntrega->nome_arquivo }}</a>
                                     @else
-                                        <span class="text-secondary">Nao enviada</span>
+                                        <span class="text-secondary">Não enviada</span>
                                     @endif
                                 </td>
                                 <td>{{ ucfirst($ultimaEntrega?->ultimaValidacao?->status_validacao ?? 'pendente') }}</td>
@@ -108,7 +108,7 @@
     </div>
 @empty
     <div class="alert alert-info">
-        Voce ainda nao entrou em nenhuma turma. Use o codigo compartilhado pelo professor para iniciar o acompanhamento.
+        Você ainda não entrou em nenhuma turma. Use o código compartilhado pelo professor para iniciar o acompanhamento.
     </div>
 @endforelse
 @endsection

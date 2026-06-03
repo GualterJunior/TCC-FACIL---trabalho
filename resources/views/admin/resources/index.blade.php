@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', $title.' - TCC Facil')
+@section('title', $title.' - TCC Fácil')
 
 @section('content')
 @php
@@ -20,7 +20,7 @@
 
 @unless ($tableExists)
     <div class="alert alert-warning">
-        A tabela deste modulo ainda nao existe no banco. Rode as migrations para liberar o cadastro.
+        A tabela deste módulo ainda não existe no banco. Rode as migrations para liberar o cadastro.
     </div>
 @endunless
 

@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Suporte - TCC Facil')
+@section('title', 'Suporte - TCC Fácil')
 
 @section('content')
 <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-4">
@@ -8,7 +8,7 @@
         <h1 class="h3 mb-1">Suporte</h1>
         <p class="text-secondary mb-0">Duvidas sobre turma, grupo, tema sorteado ou etapas do TCC.</p>
     </div>
-    <a href="{{ route('suportes.create') }}" class="btn btn-primary">Nova solicitacao</a>
+    <a href="{{ route('suportes.create') }}" class="btn btn-primary">Nova solicitação</a>
 </div>
 
 <div class="card shadow-sm">
@@ -36,7 +36,7 @@
                     </tr>
                 @empty
                     <tr>
-                        <td colspan="5" class="text-center text-secondary py-4">Nenhuma solicitacao registrada.</td>
+                        <td colspan="5" class="text-center text-secondary py-4">Nenhuma solicitação registrada.</td>
                     </tr>
                 @endforelse
             </tbody>

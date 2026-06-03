@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Suporte - TCC Facil')
+@section('title', 'Suporte - TCC Fácil')
 
 @section('content')
 <div class="mb-4">

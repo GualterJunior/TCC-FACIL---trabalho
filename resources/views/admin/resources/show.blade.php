@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', $title.' - TCC Facil')
+@section('title', $title.' - TCC Fácil')
 
 @section('content')
 @php

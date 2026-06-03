@@ -1,11 +1,11 @@
 @extends('layouts.app')
 
-@section('title', 'Nova solicitacao - TCC Facil')
+@section('title', 'Nova solicitação - TCC Fácil')
 
 @section('content')
 <div class="mb-4">
     <a href="{{ route('suportes.index') }}" class="text-decoration-none">&larr; Voltar</a>
-    <h1 class="h3 mt-2 mb-0">Nova solicitacao</h1>
+    <h1 class="h3 mt-2 mb-0">Nova solicitação</h1>
 </div>
 
 <div class="card shadow-sm">

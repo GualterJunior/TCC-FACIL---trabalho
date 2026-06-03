@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Minhas turmas - TCC Facil')
+@section('title', 'Minhas turmas - TCC Fácil')
 
 @section('content')
 <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-4">
@@ -16,7 +16,7 @@
             <div class="card-body">
                 <h2 class="h5">Entrar em uma turma</h2>
                 <form method="GET" action="{{ route('aluno.turmas.index') }}" class="mt-3">
-                    <label class="form-label" for="busca">Codigo ou nome da turma</label>
+                    <label class="form-label" for="busca">Código ou nome da turma</label>
                     <div class="input-group">
                         <input class="form-control" id="busca" name="busca" value="{{ $busca }}" placeholder="Ex.: ES-2024-2">
                         <button class="btn btn-outline-primary" type="submit">Buscar</button>
@@ -44,7 +44,7 @@
                     @forelse ($turmas as $turma)
                         <div class="border rounded p-3 mb-2">
                             <div class="fw-semibold">{{ $turma->nome_turma }}</div>
-                            <div class="text-secondary small">Codigo: {{ $turma->codigo_turma }} | Grupos: {{ $turma->grupos_count }}</div>
+                            <div class="text-secondary small">Código: {{ $turma->codigo_turma }} | Grupos: {{ $turma->grupos_count }}</div>
                         </div>
                     @empty
                         <p class="text-secondary mb-0">Nenhuma turma encontrada.</p>
@@ -63,7 +63,7 @@
                         <thead class="table-light">
                             <tr>
                                 <th>Turma</th>
-                                <th>Codigo</th>
+                                <th>Código</th>
                                 <th>Grupo</th>
                                 <th>Semestre</th>
                             </tr>
@@ -78,7 +78,7 @@
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="4" class="text-center text-secondary py-4">Voce ainda nao entrou em nenhuma turma.</td>
+                                    <td colspan="4" class="text-center text-secondary py-4">Você ainda não entrou em nenhuma turma.</td>
                                 </tr>
                             @endforelse
                         </tbody>

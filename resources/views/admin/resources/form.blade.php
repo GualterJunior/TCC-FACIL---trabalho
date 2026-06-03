@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', ($record ? 'Editar ' : 'Cadastrar ').$title.' - TCC Facil')
+@section('title', ($record ? 'Editar ' : 'Cadastrar ').$title.' - TCC Fácil')
 
 @section('content')
 <div class="mb-4">

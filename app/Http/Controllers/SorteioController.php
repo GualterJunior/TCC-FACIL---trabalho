@@ -70,7 +70,7 @@ class SorteioController extends AdminResourceController
         }
 
         if ($temas->count() < $grupos->count()) {
-            return back()->with('success', 'Nao ha temas disponiveis suficientes para todos os grupos.');
+            return back()->with('success', 'Não há temas disponíveis suficientes para todos os grupos.');
         }
 
         $temasAnteriores = ResultadoSorteio::where('id_sorteio', $sorteio->id_sorteio)->pluck('id_tema');
