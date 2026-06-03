@@ -26,7 +26,11 @@ class Etapa extends Model
         return $this->belongsTo(Turma::class, 'id_turma');
     }
 
+<<<<<<< HEAD
     public function Entrega()
+=======
+    public function entregas()
+>>>>>>> 89fa71c (correção de bugs)
     {
         return $this->hasMany(Entrega::class, 'id_etapa');
     }

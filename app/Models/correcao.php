@@ -22,7 +22,7 @@ class Correcao extends Model
         'comentario'
     ];
 
-    public function Entregas()
+    public function entrega()
     {
         return $this->belongsTo(Entrega::class, 'id_entrega');
     }

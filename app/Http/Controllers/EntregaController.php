@@ -13,7 +13,11 @@ class EntregaController extends AdminResourceController
     protected string $modelClass = Entrega::class;
     protected string $routeName = 'entregas';
     protected string $title = 'Entrega';
+<<<<<<< HEAD
     protected string $table = 'entrega';
+=======
+    protected string $table = 'entregas';
+>>>>>>> 89fa71c (correção de bugs)
     protected string $primaryKey = 'id_entrega';
 
     protected function fields(): array

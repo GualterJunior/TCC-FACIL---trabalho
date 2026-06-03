@@ -38,7 +38,11 @@ class Entrega extends Model
 
     public function validacoes()
     {
+<<<<<<< HEAD
         return $this->hasMany(Validacao::class, 'id_Entrega');
+=======
+        return $this->hasMany(Validacao::class, 'id_entrega');
+>>>>>>> 89fa71c (correção de bugs)
     }
 
     public function correcoes()
