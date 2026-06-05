@@ -15,7 +15,7 @@ class DashboardController extends Controller
 
         $cards = $isStaff
             ? [
-                ['label' => 'Usuarios', 'route' => 'users.index', 'count' => $this->countTable('users')],
+                ['label' => 'Usuários', 'route' => 'users.index', 'count' => $this->countTable('users')],
                 ['label' => 'Projetos', 'route' => 'projetos.index', 'count' => $this->countTable('projetos')],
                 ['label' => 'Turmas', 'route' => 'turmas.index', 'count' => $this->countTable('turmas')],
                 ['label' => 'Grupos', 'route' => 'grupos.index', 'count' => $this->countTable('grupos')],

@@ -28,15 +28,17 @@ Route::middleware('auth')->group(function () {
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
-    Route::resource('projetos', ProjetoController::class)->only(['index', 'show']);
-    Route::resource('grupos', GrupoController::class)->only(['index', 'show']);
-    Route::resource('temas', TemaController::class)->only(['index', 'show']);
+    Route::resource('projetos', ProjetoController::class)->only(['index']);
+    Route::resource('grupos', GrupoController::class)->only(['index']);
+    Route::resource('temas', TemaController::class)->only(['index']);
     Route::resource('entregas', EntregaController::class)->only(['index', 'create', 'store', 'show']);
     Route::post('entregas/{entrega}/reenviar', [EntregaController::class, 'reenviar'])->name('entregas.reenviar');
     Route::get('meu-tcc', [MeuTccController::class, 'index'])->name('aluno.meu-tcc.index');
     Route::get('minhas-notas', [NotaController::class, 'minhas'])->name('aluno.notas.index');
     Route::get('minhas-turmas', [AlunoTurmaController::class, 'index'])->name('aluno.turmas.index');
     Route::post('minhas-turmas/entrar', [AlunoTurmaController::class, 'entrar'])->name('aluno.turmas.entrar');
+    Route::get('minhas-turmas/{turma}/grupos/create', [GrupoController::class, 'createAluno'])->name('aluno.grupos.create');
+    Route::post('minhas-turmas/{turma}/grupos', [GrupoController::class, 'storeAluno'])->name('aluno.grupos.store');
     Route::get('historico-sorteios', [HistoricoSorteioController::class, 'index'])->name('sorteios.historico');
     Route::resource('suportes', SuporteController::class)->only(['index', 'create', 'store', 'show']);
 
@@ -55,6 +57,10 @@ Route::middleware('auth')->group(function () {
         Route::resource('validacoes', ValidacaoController::class);
         Route::put('suportes/{suporte}', [SuporteController::class, 'update'])->name('suportes.update');
     });
+
+    Route::resource('projetos', ProjetoController::class)->only(['show']);
+    Route::resource('grupos', GrupoController::class)->only(['show']);
+    Route::resource('temas', TemaController::class)->only(['show']);
 });
 
 require __DIR__.'/auth.php';

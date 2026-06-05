@@ -44,6 +44,14 @@
                     @forelse ($turmas as $turma)
                         <div class="border rounded p-3 mb-2">
                             <div class="fw-semibold">{{ $turma->nome_turma }}</div>
+                            <div class="d-flex flex-wrap gap-2 mt-2">
+                                <form method="POST" action="{{ route('aluno.turmas.entrar') }}">
+                                    @csrf
+                                    <input type="hidden" name="codigo_turma" value="{{ $turma->codigo_turma }}">
+                                    <button class="btn btn-sm btn-primary" type="submit">Entrar em grupo com vaga</button>
+                                </form>
+                                <a href="{{ route('aluno.grupos.create', $turma) }}" class="btn btn-sm btn-outline-primary">Criar grupo</a>
+                            </div>
                             <div class="text-secondary small">Código: {{ $turma->codigo_turma }} | Grupos: {{ $turma->grupos_count }}</div>
                         </div>
                     @empty

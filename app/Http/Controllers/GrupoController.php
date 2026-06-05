@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\Grupo;
 use App\Models\Turma;
+use App\Models\User;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Validation\Rule;
 
@@ -14,6 +16,7 @@ class GrupoController extends AdminResourceController
     protected string $title = 'Grupo';
     protected string $table = 'grupos';
     protected string $primaryKey = 'id_grupo';
+    private const LIMITE_INTEGRANTES_GRUPO = 3;
 
     public function index()
     {
@@ -48,6 +51,72 @@ class GrupoController extends AdminResourceController
             ->firstOrFail();
 
         return view('grupos.show', compact('grupo', 'isStaff'));
+    }
+
+    public function create()
+    {
+        return view('grupos.create', [
+            'turmas' => Turma::orderBy('nome_turma')->get(),
+            'alunos' => User::where('tipo', 'aluno')->orderBy('name')->get(),
+            'turmaSelecionada' => request('turma'),
+            'isStaff' => true,
+        ]);
+    }
+
+    public function store(Request $request)
+    {
+        $data = $request->validate([
+            'nome_grupo' => ['required', 'string', 'max:255'],
+            'id_turma' => ['required', 'integer', 'exists:turmas,id_turma'],
+            'status_grupo' => ['required', Rule::in(['ativo', 'inativo'])],
+            'integrantes' => ['nullable', 'array', 'max:'.self::LIMITE_INTEGRANTES_GRUPO],
+            'integrantes.*' => ['integer', 'exists:users,id'],
+        ]);
+
+        $integrantes = $data['integrantes'] ?? [];
+        unset($data['integrantes']);
+
+        $grupo = Grupo::create($data);
+
+        if (! empty($integrantes)) {
+            $grupo->usuarios()->sync($integrantes);
+        }
+
+        return redirect()->route('grupos.show', $grupo)->with('success', 'Grupo criado com sucesso.');
+    }
+
+    public function createAluno(Turma $turma)
+    {
+        abort_unless($turma->status_turma === 'ativa', 403);
+
+        return view('grupos.create-aluno', compact('turma'));
+    }
+
+    public function storeAluno(Request $request, Turma $turma)
+    {
+        abort_unless($turma->status_turma === 'ativa', 403);
+
+        $jaEntrou = Grupo::where('id_turma', $turma->id_turma)
+            ->whereHas('usuarios', fn ($query) => $query->where('users.id', $request->user()->id))
+            ->exists();
+
+        if ($jaEntrou) {
+            return redirect()->route('aluno.turmas.index')->with('success', 'Você já participa de um grupo nesta turma.');
+        }
+
+        $data = $request->validate([
+            'nome_grupo' => ['required', 'string', 'max:255'],
+        ]);
+
+        $grupo = Grupo::create([
+            'nome_grupo' => $data['nome_grupo'],
+            'id_turma' => $turma->id_turma,
+            'status_grupo' => 'ativo',
+        ]);
+
+        $grupo->usuarios()->syncWithoutDetaching([$request->user()->id]);
+
+        return redirect()->route('grupos.show', $grupo)->with('success', 'Grupo criado e vinculado à turma.');
     }
 
     protected function fields(): array

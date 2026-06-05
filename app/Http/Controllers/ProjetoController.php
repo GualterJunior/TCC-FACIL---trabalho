@@ -15,6 +15,11 @@ class ProjetoController extends AdminResourceController
     protected string $table = 'projetos';
     protected string $primaryKey = 'id_projeto';
 
+    public function create()
+    {
+        return view('projetos.create');
+    }
+
     public function index()
     {
         $user = auth()->user();

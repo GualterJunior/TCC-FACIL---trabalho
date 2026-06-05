@@ -69,7 +69,9 @@ class AlunoTurmaController extends Controller
             ->first();
 
         if (! $grupo) {
-            return back()->withErrors(['codigo_turma' => 'A turma foi encontrada, mas não possui grupos ativos com vagas. Peça ao professor para criar ou ajustar os grupos.']);
+            return redirect()
+                ->route('aluno.grupos.create', $turma)
+                ->with('success', 'A turma foi encontrada, mas não possui grupos ativos com vagas. Crie seu grupo para continuar.');
         }
 
         $grupo->usuarios()->syncWithoutDetaching([$request->user()->id]);

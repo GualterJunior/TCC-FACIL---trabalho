@@ -1,6 +1,6 @@
 @extends('layouts.guest')
 
-@section('title', 'Login - TCC Facil')
+@section('title', 'Login - TCC Fácil')
 
 @section('content')
 <div class="container">
@@ -8,7 +8,7 @@
         <div class="card-body p-4">
             <div class="text-center mb-4">
                 <a href="{{ route('home') }}" class="text-decoration-none">
-                    <img src="{{ asset('images/logo-tcc-facil.png') }}" alt="TCC Facil" style="height: 82px; width: auto; max-width: 100%;">
+                    <img src="{{ asset('images/logo-tcc-facil.png') }}" alt="TCC Fácil" style="height: 82px; width: auto; max-width: 100%;">
                 </a>
                 <p class="text-secondary mb-0 mt-2">Entre para acessar a area administrativa.</p>
             </div>
@@ -45,7 +45,7 @@
             </form>
 
             <div class="text-center mt-3">
-                <span class="text-secondary">Ainda nao tem conta?</span>
+                <span class="text-secondary">Ainda não tem conta?</span>
                 <a href="{{ route('register') }}">Cadastre-se</a>
             </div>
         </div>

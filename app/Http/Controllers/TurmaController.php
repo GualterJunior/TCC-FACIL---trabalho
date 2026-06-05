@@ -17,6 +17,15 @@ class TurmaController extends AdminResourceController
     protected string $table = 'turmas';
     protected string $primaryKey = 'id_turma';
 
+    public function show(string $id)
+    {
+        $turma = Turma::with(['professor', 'grupos.usuarios', 'temas', 'etapas', 'sorteios'])
+            ->where('id_turma', $id)
+            ->firstOrFail();
+
+        return view('turmas.show', compact('turma'));
+    }
+
     protected function fields(): array
     {
         return [
@@ -81,6 +90,6 @@ class TurmaController extends AdminResourceController
             return [];
         }
 
-        return User::orderBy('name')->pluck('name', 'id')->toArray();
+        return User::whereIn('tipo', ['professor', 'coordenador'])->orderBy('name')->pluck('name', 'id')->toArray();
     }
 }

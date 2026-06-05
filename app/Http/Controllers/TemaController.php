@@ -15,6 +15,13 @@ class TemaController extends AdminResourceController
     protected string $table = 'temas';
     protected string $primaryKey = 'id_tema';
 
+    public function create()
+    {
+        return view('temas.create', [
+            'turmas' => Turma::orderBy('nome_turma')->get(),
+        ]);
+    }
+
     public function index()
     {
         $user = auth()->user();

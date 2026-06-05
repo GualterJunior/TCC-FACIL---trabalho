@@ -11,7 +11,10 @@
         </p>
     </div>
     @if ($isStaff)
-        <a href="{{ route('validacoes.index') }}" class="btn btn-primary">Avaliar entregas</a>
+        <div class="d-flex flex-wrap gap-2">
+            <a href="{{ route('sorteios.index') }}" class="btn btn-primary">Sorteio de temas</a>
+            <a href="{{ route('validacoes.index') }}" class="btn btn-outline-primary">Avaliar entregas</a>
+        </div>
     @else
         <a href="{{ route('entregas.create') }}" class="btn btn-primary">Nova entrega</a>
     @endif
@@ -25,7 +28,7 @@
                     <div class="card-body">
                         <span class="text-secondary">{{ $card['label'] }}</span>
                         <div class="display-6 fw-bold text-primary">{{ $card['count'] }}</div>
-                        <span class="small text-secondary">{{ $isStaff ? 'Gerenciar registros' : 'Acessar area' }}</span>
+                        <span class="small text-secondary">{{ $isStaff ? 'Gerenciar registros' : 'Acessar área' }}</span>
                     </div>
                 </div>
             </a>
@@ -36,7 +39,7 @@
 <div class="card mt-4">
     <div class="card-body">
         @if ($isStaff)
-            <h2 class="h5">Área de avaliação</h2>
+            <h2 class="h5 section-heading">Área de avaliação</h2>
             <p class="text-secondary mb-3">
                 Use as opções abaixo para acompanhar entregas, validar trabalhos e registrar notas dos grupos.
             </p>
@@ -48,7 +51,7 @@
                 <a href="{{ route('acompanhamento.index') }}" class="btn btn-outline-primary">Acompanhamento</a>
             </div>
         @else
-            <h2 class="h5">Acompanhamento do aluno</h2>
+            <h2 class="h5 section-heading">Acompanhamento do aluno</h2>
             <p class="text-secondary mb-3">
                 Você pode consultar o tema sorteado, acompanhar seu grupo e enviar as etapas do TCC.
             </p>
