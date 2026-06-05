@@ -39,6 +39,7 @@ Route::middleware('auth')->group(function () {
     Route::post('minhas-turmas/entrar', [AlunoTurmaController::class, 'entrar'])->name('aluno.turmas.entrar');
     Route::get('minhas-turmas/{turma}/grupos/create', [GrupoController::class, 'createAluno'])->name('aluno.grupos.create');
     Route::post('minhas-turmas/{turma}/grupos', [GrupoController::class, 'storeAluno'])->name('aluno.grupos.store');
+    Route::post('grupos/{grupo}/preferencias', [GrupoController::class, 'salvarPreferencias'])->name('grupos.preferencias');
     Route::get('historico-sorteios', [HistoricoSorteioController::class, 'index'])->name('sorteios.historico');
     Route::resource('suportes', SuporteController::class)->only(['index', 'create', 'store', 'show']);
 

@@ -16,7 +16,10 @@ class Sorteio extends Model
     protected $fillable = [
         'id_turma',
         'data_sorteio',
-        'status_sorteio'
+        'status_sorteio',
+        'executado_por',
+        'executado_em',
+        'resumo_sorteio'
     ];
 
     public function turma()
@@ -27,5 +30,10 @@ class Sorteio extends Model
     public function resultados()
     {
         return $this->hasMany(ResultadoSorteio::class, 'id_sorteio');
+    }
+
+    public function executor()
+    {
+        return $this->belongsTo(User::class, 'executado_por');
     }
 }

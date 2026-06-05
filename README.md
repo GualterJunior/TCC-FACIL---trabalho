@@ -2,6 +2,16 @@
 
 Sistema web em Laravel para sorteio e acompanhamento de temas de Trabalho de Conclusao de Curso. O projeto organiza turmas, grupos, temas, sorteios, etapas, entregas, validacoes, notas, projetos de referencia e suporte.
 
+## O que foi feito nesta versao
+
+- Criacao de preferencias de tema por grupo, com ate 3 opcoes em ordem de prioridade.
+- Melhoria do algoritmo de sorteio para tentar atender preferencias antes de usar distribuicao aleatoria.
+- Registro de auditoria do sorteio, incluindo executor, data/hora, resumo e criterio usado em cada resultado.
+- Tela de resultados do sorteio mostrando se o tema veio por preferencia atendida ou por sorteio aleatorio.
+- Tela de listagem de sorteios com acoes diretas para abrir resultado e executar sorteio.
+- Ajuste da navbar para deixar Sorteios como item principal unico e mover rotas administrativas para um menu compacto.
+- Inclusao do usuario `coordenador@tccfacil.com` no seeder, garantindo acesso administrativo apos clonar e popular o banco.
+
 ## Funcionalidades
 
 - Landing page publica de apresentacao do sistema.
@@ -15,8 +25,10 @@ Sistema web em Laravel para sorteio e acompanhamento de temas de Trabalho de Con
 - Distribuicao automatica do aluno em grupo com vaga.
 - Criacao de grupo pelo aluno quando nao houver grupo ativo com vaga.
 - Criacao de grupos, temas e projetos pela area administrativa.
+- Cadastro de ate 3 preferencias de tema por grupo.
 - Limite basico de integrantes por grupo.
-- Sorteio automatico de temas por turma.
+- Sorteio automatico de temas por turma, priorizando preferencias dos grupos.
+- Auditoria do sorteio com executor, data, resumo e criterio usado em cada distribuicao.
 - Historico de sorteios.
 - Tela Meu TCC para o aluno acompanhar tema, etapas, entregas e progresso.
 - Tela Meu grupo com integrantes, tema, entregas, correcoes e notas.
@@ -123,6 +135,7 @@ As principais tabelas criadas pelas migrations incluem:
 - validacoes
 - sorteios
 - resultado_sorteio
+- preferencias_tema
 - progresso_grupo
 - correcoes
 - suportes
@@ -209,9 +222,11 @@ As rotas administrativas sao protegidas por login e permissao de perfil.
 2. Criar ou abrir uma turma.
 3. Criar grupos dentro da turma.
 4. Criar temas para a turma.
-5. Criar um sorteio.
-6. Executar o sorteio.
-7. Acompanhar entregas, validacoes e notas.
+5. Revisar as preferencias de tema nos grupos.
+6. Criar um sorteio.
+7. Executar o sorteio.
+8. Conferir o criterio de distribuicao: preferencia atendida ou aleatorio.
+9. Acompanhar entregas, validacoes e notas.
 
 ### Aluno
 
@@ -219,9 +234,10 @@ As rotas administrativas sao protegidas por login e permissao de perfil.
 2. Acessar Minhas turmas.
 3. Entrar em uma turma pelo codigo.
 4. Criar grupo caso nao exista grupo ativo com vaga.
-5. Acessar Meu TCC.
-6. Enviar uma entrega.
-7. Consultar notas e historico.
+5. Abrir o grupo e escolher ate 3 preferencias de tema.
+6. Acessar Meu TCC apos o sorteio.
+7. Enviar uma entrega.
+8. Consultar notas e historico.
 
 ## Tecnologias
 

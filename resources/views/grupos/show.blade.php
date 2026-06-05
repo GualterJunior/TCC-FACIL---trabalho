@@ -5,6 +5,7 @@
 @section('content')
 @php
     $tema = $grupo->resultadoSorteio?->tema;
+    $preferenciasAtuais = $grupo->preferenciasTema->keyBy('prioridade');
     $progressos = $grupo->progressos->keyBy('id_etapa');
     $entregas = $grupo->entregas->sortByDesc('id_entrega')->groupBy('id_etapa');
 @endphp
@@ -59,6 +60,62 @@
                 @endforelse
             </div>
         </div>
+    </div>
+</div>
+
+<div class="card shadow-sm mb-4">
+    <div class="card-body">
+        <div class="d-flex flex-wrap justify-content-between align-items-start gap-2 mb-3">
+            <div>
+                <h2 class="h5 mb-1">Preferencias de tema</h2>
+                <p class="text-secondary mb-0">Escolha ate 3 temas em ordem de prioridade. O sorteio tentara atender essas escolhas antes do aleatorio.</p>
+            </div>
+            @if ($tema)
+                <span class="badge text-bg-success">Tema ja sorteado</span>
+            @endif
+        </div>
+
+        @if ($canUpdatePreferences && ! $tema)
+            <form method="POST" action="{{ route('grupos.preferencias', $grupo) }}">
+                @csrf
+                <div class="row g-3">
+                    @for ($prioridade = 1; $prioridade <= 3; $prioridade++)
+                        <div class="col-md-4">
+                            <label class="form-label">{{ $prioridade }}ª opcao</label>
+                            <select name="preferencias[{{ $prioridade }}]" class="form-select">
+                                <option value="">Sem preferencia</option>
+                                @foreach ($temasDisponiveis as $temaOpcao)
+                                    <option value="{{ $temaOpcao->id_tema }}" @selected((string) old('preferencias.'.$prioridade, $preferenciasAtuais->get($prioridade)?->id_tema) === (string) $temaOpcao->id_tema)>
+                                        {{ $temaOpcao->titulo }} - {{ $temaOpcao->area }}
+                                    </option>
+                                @endforeach
+                            </select>
+                        </div>
+                    @endfor
+                </div>
+                @error('preferencias.*')
+                    <div class="text-danger small mt-2">{{ $message }}</div>
+                @enderror
+                <div class="mt-3">
+                    <button class="btn btn-primary" type="submit">Salvar preferencias</button>
+                </div>
+            </form>
+        @else
+            <div class="row g-3">
+                @for ($prioridade = 1; $prioridade <= 3; $prioridade++)
+                    @php $preferencia = $preferenciasAtuais->get($prioridade); @endphp
+                    <div class="col-md-4">
+                        <div class="border rounded p-3 h-100">
+                            <div class="text-secondary small">{{ $prioridade }}ª opcao</div>
+                            <div class="fw-semibold">{{ $preferencia?->tema?->titulo ?? 'Nao informada' }}</div>
+                            @if ($preferencia?->tema)
+                                <div class="text-secondary small">{{ $preferencia->tema->area }}</div>
+                            @endif
+                        </div>
+                    </div>
+                @endfor
+            </div>
+        @endif
     </div>
 </div>
 

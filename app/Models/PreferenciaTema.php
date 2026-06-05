@@ -2,35 +2,28 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
 
-class ResultadoSorteio extends Model
+class PreferenciaTema extends Model
 {
     use HasFactory;
 
-    protected $table = 'resultado_sorteio';
+    protected $table = 'preferencias_tema';
 
-    protected $primaryKey = 'id_resultado';
+    protected $primaryKey = 'id_preferencia';
 
     protected $fillable = [
-        'id_sorteio',
         'id_grupo',
         'id_tema',
-        'criterio',
-        'prioridade_atendida'
+        'prioridade',
     ];
-
-    public function sorteio()
-    {
-        return $this->belongsTo(Sorteio::class, 'id_sorteio');
-    }
 
     public function grupo()
     {
         return $this->belongsTo(Grupo::class, 'id_grupo');
     }
-    
+
     public function tema()
     {
         return $this->belongsTo(Tema::class, 'id_tema');

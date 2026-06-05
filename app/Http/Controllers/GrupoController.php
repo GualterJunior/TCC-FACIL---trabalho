@@ -3,9 +3,12 @@
 namespace App\Http\Controllers;
 
 use App\Models\Grupo;
+use App\Models\PreferenciaTema;
+use App\Models\Tema;
 use App\Models\Turma;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Validation\Rule;
 
@@ -41,16 +44,22 @@ class GrupoController extends AdminResourceController
     public function show(string $id)
     {
         $user = auth()->user();
-        $isStaff = in_array(strtolower(trim((string) $user?->tipo)), ['professor', 'coordenador'], true);
+        $isStaff = $this->isStaff($user);
 
-        $grupo = Grupo::with(['turma.etapas', 'usuarios', 'resultadoSorteio.tema', 'progressos.etapa', 'entregas.etapa', 'entregas.ultimaValidacao', 'notas.professor'])
+        $grupo = Grupo::with(['turma.etapas', 'usuarios', 'resultadoSorteio.tema', 'preferenciasTema.tema', 'progressos.etapa', 'entregas.etapa', 'entregas.ultimaValidacao', 'notas.professor'])
             ->when(! $isStaff, function ($query) use ($user) {
                 $query->whereHas('usuarios', fn ($usuarios) => $usuarios->where('users.id', $user->id));
             })
             ->where('id_grupo', $id)
             ->firstOrFail();
 
-        return view('grupos.show', compact('grupo', 'isStaff'));
+        $temasDisponiveis = Tema::where('id_turma', $grupo->id_turma)
+            ->where('status_tema', 'disponivel')
+            ->orderBy('titulo')
+            ->get();
+        $canUpdatePreferences = $isStaff || $grupo->usuarios->contains('id', $user?->id);
+
+        return view('grupos.show', compact('grupo', 'isStaff', 'temasDisponiveis', 'canUpdatePreferences'));
     }
 
     public function create()
@@ -119,6 +128,47 @@ class GrupoController extends AdminResourceController
         return redirect()->route('grupos.show', $grupo)->with('success', 'Grupo criado e vinculado à turma.');
     }
 
+    public function salvarPreferencias(Request $request, Grupo $grupo)
+    {
+        $user = $request->user();
+        $isStaff = $this->isStaff($user);
+        $isMember = $grupo->usuarios()->where('users.id', $user->id)->exists();
+
+        abort_unless($isStaff || $isMember, 403);
+
+        if ($grupo->resultadoSorteio()->exists()) {
+            return back()->with('success', 'Este grupo ja possui tema sorteado. As preferencias nao podem mais ser alteradas.');
+        }
+
+        $data = $request->validate([
+            'preferencias' => ['nullable', 'array', 'max:3'],
+            'preferencias.*' => [
+                'nullable',
+                'integer',
+                'distinct',
+                Rule::exists('temas', 'id_tema')->where('id_turma', $grupo->id_turma),
+            ],
+        ]);
+
+        $preferencias = collect($data['preferencias'] ?? [])
+            ->filter()
+            ->values();
+
+        DB::transaction(function () use ($grupo, $preferencias) {
+            PreferenciaTema::where('id_grupo', $grupo->id_grupo)->delete();
+
+            foreach ($preferencias as $index => $idTema) {
+                PreferenciaTema::create([
+                    'id_grupo' => $grupo->id_grupo,
+                    'id_tema' => $idTema,
+                    'prioridade' => $index + 1,
+                ]);
+            }
+        });
+
+        return back()->with('success', 'Preferencias de tema salvas com sucesso.');
+    }
+
     protected function fields(): array
     {
         return [
@@ -138,5 +188,10 @@ class GrupoController extends AdminResourceController
         }
 
         return Turma::orderBy('nome_turma')->pluck('nome_turma', 'id_turma')->toArray();
+    }
+
+    private function isStaff(?User $user): bool
+    {
+        return in_array(strtolower(trim((string) $user?->tipo)), ['professor', 'coordenador'], true);
     }
 }

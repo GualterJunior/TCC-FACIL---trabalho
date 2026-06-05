@@ -19,6 +19,7 @@ class DatabaseSeeder extends Seeder
             TurmaSeeder::class,
             TemaSeeder::class,
             GrupoSeeder::class,
+            PreferenciaTemaSeeder::class,
             EtapaSeeder::class,
             ProjetoSeeder::class,
             EntregaSeeder::class,

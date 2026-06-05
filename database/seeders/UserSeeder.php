@@ -12,6 +12,13 @@ class UserSeeder extends Seeder
     {
         // Coordenadores
         User::create([
+            'name' => 'Coordenador TCC Facil',
+            'email' => 'coordenador@tccfacil.com',
+            'password' => Hash::make('password'),
+            'tipo' => 'coordenador',
+        ]);
+
+        User::create([
             'name' => 'Maria Coordenadora',
             'email' => 'maria@tcc-facil.com',
             'password' => Hash::make('password'),

@@ -51,6 +51,11 @@ class Grupo extends Model
         return $this->hasOne(ResultadoSorteio::class, 'id_grupo')->latestOfMany('id_resultado');
     }
 
+    public function preferenciasTema()
+    {
+        return $this->hasMany(PreferenciaTema::class, 'id_grupo')->orderBy('prioridade');
+    }
+
     public function progressos()
     {
         return $this->hasMany(ProgressoGrupo::class, 'id_grupo');
