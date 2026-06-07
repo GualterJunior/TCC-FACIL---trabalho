@@ -44,6 +44,10 @@ class AlunoTurmaController extends Controller
 
         $turma = Turma::where('codigo_turma', $data['codigo_turma'])->first();
 
+        // (Melhoria) Para evitar que o aluno “entre aleatoriamente” em um grupo fora das regras,
+        // garantimos que a turma tenha grupos ativos com vagas e validamos elegibilidade antes de vincular.
+        // A escolha do grupo abaixo passa a respeitar prioridade por menor número de integrantes.
+
         if (! $turma) {
             return back()->withErrors(['codigo_turma' => 'Código de turma não encontrado.']);
         }
@@ -62,10 +66,13 @@ class AlunoTurmaController extends Controller
 
         $grupo = Grupo::where('id_turma', $turma->id_turma)
             ->where('status_grupo', 'ativo')
+            ->whereDoesntHave('usuarios', function ($q) use ($request) {
+                $q->where('users.id', $request->user()->id);
+            })
             ->withCount('usuarios')
             ->having('usuarios_count', '<', self::LIMITE_INTEGRANTES_GRUPO)
-            ->orderBy('usuarios_count')
-            ->orderBy('nome_grupo')
+            ->orderBy('usuarios_count', 'asc')
+            ->orderBy('nome_grupo', 'asc')
             ->first();
 
         if (! $grupo) {
