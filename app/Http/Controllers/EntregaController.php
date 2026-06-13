@@ -38,6 +38,21 @@ class EntregaController extends AdminResourceController
     }
 
     /**
+     * Formulario de envio de entrega
+     */
+    public function create()
+    {
+        $this->authorize('create', $this->modelClass);
+
+        return view(
+            'entregas.create',
+            $this->viewData([
+                'isStaff' => $this->isStaff(auth()->user()),
+            ])
+        );
+    }
+
+    /**
      * Lista entregas
      */
     public function index()

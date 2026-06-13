@@ -21,6 +21,7 @@ class AuthServiceProvider extends ServiceProvider
         \App\Models\User::class => \App\Policies\UserPolicy::class,
         \App\Models\Grupo::class => \App\Policies\GrupoPolicy::class,
         \App\Models\Tema::class => \App\Policies\TemaPolicy::class,
+        \App\Models\Sorteio::class => \App\Policies\SorteioPolicy::class,
     ];
 
     /**
