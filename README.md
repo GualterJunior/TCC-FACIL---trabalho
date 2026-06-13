@@ -2,6 +2,33 @@
 
 Sistema web em Laravel para sorteio e acompanhamento de temas de Trabalho de Conclusao de Curso. O projeto organiza turmas, grupos, temas, sorteios, etapas, entregas, validacoes, notas, projetos de referencia e suporte.
 
+## Status atual
+
+O sistema esta pronto para demonstracao local. A inicializacao foi automatizada para facilitar a apresentacao: ao executar `php artisan serve`, o projeto prepara ambiente, dependencias, banco SQLite, arquivos publicos e dados basicos quando necessario.
+
+Foi validado que as telas principais renderizam corretamente para os perfis de coordenador/professor e aluno. A validacao automatizada atual cobre dashboards, projetos, turmas, grupos, temas, entregas, sorteios, etapas, notas, usuarios, validacoes, acompanhamento, suporte, perfil, Meu TCC e historico de sorteios.
+
+Resultado da ultima validacao:
+
+```text
+php artisan test  OK - 4 tests, 62 assertions
+npm run build     OK
+```
+
+Dados ficticios disponiveis apos `php artisan migrate:fresh --seed`:
+
+```text
+18 usuarios
+2 turmas
+5 grupos
+7 temas
+5 projetos
+9 entregas
+2 sorteios
+5 notas
+8 etapas
+```
+
 ## O que foi feito nesta versao
 
 - Criacao de preferencias de tema por grupo, com ate 3 opcoes em ordem de prioridade.
@@ -9,8 +36,13 @@ Sistema web em Laravel para sorteio e acompanhamento de temas de Trabalho de Con
 - Registro de auditoria do sorteio, incluindo executor, data/hora, resumo e criterio usado em cada resultado.
 - Tela de resultados do sorteio mostrando se o tema veio por preferencia atendida ou por sorteio aleatorio.
 - Tela de listagem de sorteios com acoes diretas para abrir resultado e executar sorteio.
+- Criacao da tela de nova entrega integrada ao fluxo atual do controller.
+- Ajuste das policies de Sorteio, Projeto e Validacao para liberar as telas administrativas aos perfis corretos.
+- Configuracao de SQLite local para demonstracao sem depender de MySQL.
+- Instalacao automatica de PHP portatil atualizado e Composer local quando necessario.
 - Ajuste da navbar para deixar Sorteios como item principal unico e mover rotas administrativas para um menu compacto.
 - Inclusao do usuario `coordenador@tccfacil.com` no seeder, garantindo acesso administrativo apos clonar e popular o banco.
+- Teste automatizado de fumaca para garantir que as telas principais abrem sem erro para coordenador e aluno.
 
 ## Funcionalidades
 
@@ -105,6 +137,8 @@ Ao rodar `php artisan serve`, o sistema tenta executar:
 - criacao do `.env`, se ainda nao existir;
 - criacao do arquivo `database/database.sqlite`, se ainda nao existir;
 - ativacao local das extensoes SQLite configuradas em `.php-ini-scan`;
+- instalacao local de um PHP portatil atualizado, se o PHP ativo for menor que 8.2;
+- instalacao local do Composer (`composer.phar`), se o Composer global nao estiver disponivel;
 - `composer install`, se `vendor` estiver ausente ou desatualizado;
 - `npm install`, se `node_modules` estiver ausente ou desatualizado;
 - `npm run build`, se `public/build` estiver ausente ou desatualizado;
@@ -115,7 +149,7 @@ Ao rodar `php artisan serve`, o sistema tenta executar:
 - `php artisan storage:link --force`, se o link ainda nao existir;
 - inicio do servidor local.
 
-> Observacao: o computador precisa ter PHP, Composer, Node.js e npm instalados para a primeira execucao automatica funcionar.
+> Observacao: o computador precisa ter Node.js e npm instalados para a primeira execucao automatica funcionar. Se o PHP ativo for menor que 8.2, o proprio `php artisan serve` tenta baixar e usar um PHP portatil local. Se o Composer global nao existir, ele tambem tenta baixar e usar um `composer.phar` local.
 
 ## Banco de dados
 

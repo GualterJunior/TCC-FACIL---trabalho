@@ -22,6 +22,283 @@ function tccFacilRunShell(string $command): void
     }
 }
 
+function tccFacilCommandExists(string $command): bool
+{
+    $check = PHP_OS_FAMILY === 'Windows'
+        ? 'where '.escapeshellarg($command)
+        : 'command -v '.escapeshellarg($command);
+
+    exec($check, $output, $status);
+
+    return $status === 0;
+}
+
+function tccFacilComposerPharPath(): string
+{
+    return __DIR__.DIRECTORY_SEPARATOR.'composer.phar';
+}
+
+function tccFacilRuntimeDir(): string
+{
+    return __DIR__.DIRECTORY_SEPARATOR.'.runtime';
+}
+
+function tccFacilPortablePhpDir(): string
+{
+    return tccFacilRuntimeDir().DIRECTORY_SEPARATOR.'php';
+}
+
+function tccFacilPortablePhpBinary(): string
+{
+    return tccFacilPortablePhpDir().DIRECTORY_SEPARATOR.(PHP_OS_FAMILY === 'Windows' ? 'php.exe' : 'php');
+}
+
+function tccFacilPathHasNonAscii(string $path): bool
+{
+    return preg_match('/[^\x20-\x7E]/', $path) === 1;
+}
+
+function tccFacilWindowsShortPath(string $path): ?string
+{
+    if (PHP_OS_FAMILY !== 'Windows' || ! is_dir($path)) {
+        return null;
+    }
+
+    $previous = getcwd();
+
+    if (! @chdir($path)) {
+        return null;
+    }
+
+    exec('cmd /d /c "for %I in (.) do @echo %~sI"', $output, $status);
+
+    if ($previous !== false) {
+        @chdir($previous);
+    }
+
+    if ($status !== 0 || empty($output[0])) {
+        return null;
+    }
+
+    return trim($output[0]);
+}
+
+function tccFacilPowerShellQuote(string $value): string
+{
+    return "'".str_replace("'", "''", $value)."'";
+}
+
+function tccFacilFindLatestWindowsPhpZip(): string
+{
+    $downloadsPage = (string) @file_get_contents('https://www.php.net/downloads.php?os=windows');
+
+    if ($downloadsPage !== ''
+        && preg_match(
+            '#https://downloads\.php\.net/~windows/releases/archives/php-[0-9.]+-nts-Win32-vs17-x64\.zip#',
+            $downloadsPage,
+            $matches
+        )
+    ) {
+        return $matches[0];
+    }
+
+    return 'https://downloads.php.net/~windows/releases/archives/php-8.5.7-nts-Win32-vs17-x64.zip';
+}
+
+function tccFacilConfigurePortablePhp(string $phpDir): void
+{
+    $iniPath = $phpDir.DIRECTORY_SEPARATOR.'php.ini';
+    $iniSource = $phpDir.DIRECTORY_SEPARATOR.'php.ini-production';
+
+    if (! file_exists($iniPath) && file_exists($iniSource)) {
+        copy($iniSource, $iniPath);
+    }
+
+    $extensions = [
+        'curl',
+        'fileinfo',
+        'mbstring',
+        'openssl',
+        'pdo_sqlite',
+        'sqlite3',
+        'zip',
+    ];
+
+    $ini = PHP_EOL.'; TCC Facil automatic local PHP configuration'.PHP_EOL;
+    $ini .= 'extension_dir="ext"'.PHP_EOL;
+    $ini .= 'memory_limit=512M'.PHP_EOL;
+
+    foreach ($extensions as $extension) {
+        if (file_exists($phpDir.DIRECTORY_SEPARATOR.'ext'.DIRECTORY_SEPARATOR.'php_'.$extension.'.dll')) {
+            $ini .= 'extension='.$extension.PHP_EOL;
+        }
+    }
+
+    file_put_contents($iniPath, $ini, FILE_APPEND);
+}
+
+function tccFacilDownloadPortablePhp(): void
+{
+    if (PHP_OS_FAMILY !== 'Windows') {
+        fwrite(STDERR, PHP_EOL.'Este projeto precisa de PHP 8.2 ou superior.'.PHP_EOL);
+        fwrite(STDERR, 'Atualize o PHP ativo no terminal e rode novamente: php artisan serve'.PHP_EOL);
+        exit(1);
+    }
+
+    $runtimeDir = tccFacilRuntimeDir();
+    $phpDir = tccFacilPortablePhpDir();
+    $archive = $runtimeDir.DIRECTORY_SEPARATOR.'php-windows.zip';
+    $downloadUrl = tccFacilFindLatestWindowsPhpZip();
+
+    if (! is_dir($phpDir)) {
+        mkdir($phpDir, 0777, true);
+    }
+
+    echo PHP_EOL.'PHP atual: '.PHP_VERSION.'. Instalando PHP local atualizado...'.PHP_EOL;
+    echo 'Origem: '.$downloadUrl.PHP_EOL;
+
+    if (! @copy($downloadUrl, $archive)) {
+        fwrite(STDERR, PHP_EOL.'Nao foi possivel baixar o PHP atualizado.'.PHP_EOL);
+        fwrite(STDERR, 'Verifique a conexao com a internet ou atualize o PHP do XAMPP manualmente.'.PHP_EOL);
+        exit(1);
+    }
+
+    $command = 'powershell -NoProfile -ExecutionPolicy Bypass -Command '
+        .escapeshellarg(
+            'Expand-Archive -LiteralPath '
+            .tccFacilPowerShellQuote($archive)
+            .' -DestinationPath '
+            .tccFacilPowerShellQuote($phpDir)
+            .' -Force'
+        );
+
+    tccFacilRunShell($command);
+    tccFacilConfigurePortablePhp($phpDir);
+    @unlink($archive);
+}
+
+function tccFacilRestartWithSupportedPhpIfNeeded(array $arguments): void
+{
+    if (PHP_VERSION_ID >= 80200) {
+        return;
+    }
+
+    if (getenv('TCC_FACIL_PORTABLE_PHP_BOOTSTRAPPED') === '1') {
+        fwrite(STDERR, PHP_EOL.'Este projeto usa Laravel 12 e precisa de PHP 8.2 ou superior.'.PHP_EOL);
+        fwrite(STDERR, 'PHP atual: '.PHP_VERSION.PHP_EOL);
+        exit(1);
+    }
+
+    $phpBinary = tccFacilPortablePhpBinary();
+
+    if (! file_exists($phpBinary)) {
+        tccFacilDownloadPortablePhp();
+    }
+
+    putenv('TCC_FACIL_PORTABLE_PHP_BOOTSTRAPPED=1');
+    putenv('PHP_INI_SCAN_DIR=');
+    $_ENV['TCC_FACIL_PORTABLE_PHP_BOOTSTRAPPED'] = '1';
+    unset($_ENV['PHP_INI_SCAN_DIR'], $_SERVER['PHP_INI_SCAN_DIR']);
+
+    $command = escapeshellarg($phpBinary);
+
+    foreach ($arguments as $argument) {
+        $command .= ' '.escapeshellarg($argument);
+    }
+
+    passthru($command, $status);
+    exit($status);
+}
+
+function tccFacilRestartThroughAsciiPathIfNeeded(array $arguments): void
+{
+    if (PHP_OS_FAMILY !== 'Windows') {
+        return;
+    }
+
+    if (getenv('TCC_FACIL_ASCII_PATH_BOOTSTRAPPED') === '1') {
+        return;
+    }
+
+    if (! tccFacilPathHasNonAscii(__DIR__)) {
+        return;
+    }
+
+    $shortBasePath = tccFacilWindowsShortPath(__DIR__);
+
+    if (! $shortBasePath || tccFacilPathHasNonAscii($shortBasePath)) {
+        return;
+    }
+
+    $phpBinary = $shortBasePath.DIRECTORY_SEPARATOR.'.runtime'.DIRECTORY_SEPARATOR.'php'.DIRECTORY_SEPARATOR.'php.exe';
+    $artisan = $shortBasePath.DIRECTORY_SEPARATOR.'artisan';
+
+    if (! file_exists($phpBinary) || ! file_exists($artisan)) {
+        return;
+    }
+
+    putenv('TCC_FACIL_ASCII_PATH_BOOTSTRAPPED=1');
+    $_ENV['TCC_FACIL_ASCII_PATH_BOOTSTRAPPED'] = '1';
+
+    $command = 'cd /d '.escapeshellarg($shortBasePath)
+        .' && '.escapeshellarg($phpBinary)
+        .' '.escapeshellarg($artisan);
+
+    foreach (array_slice($arguments, 1) as $argument) {
+        $command .= ' '.escapeshellarg($argument);
+    }
+
+    passthru($command, $status);
+    exit($status);
+}
+
+function tccFacilDownloadComposer(): void
+{
+    $composerPhar = tccFacilComposerPharPath();
+
+    if (! @copy('https://getcomposer.org/download/latest-stable/composer.phar', $composerPhar)) {
+        fwrite(STDERR, PHP_EOL.'Nao foi possivel baixar o Composer local.'.PHP_EOL);
+        fwrite(STDERR, 'Instale o Composer manualmente ou verifique a conexao com a internet.'.PHP_EOL);
+        exit(1);
+    }
+
+    if (! file_exists($composerPhar) || filesize($composerPhar) === 0) {
+        @unlink($composerPhar);
+        fwrite(STDERR, PHP_EOL.'O download do Composer local ficou vazio ou invalido.'.PHP_EOL);
+        exit(1);
+    }
+}
+
+function tccFacilComposerCommand(): string
+{
+    $composerPhar = tccFacilComposerPharPath();
+
+    if (getenv('TCC_FACIL_PORTABLE_PHP_BOOTSTRAPPED') !== '1'
+        && tccFacilCommandExists('composer')
+    ) {
+        return 'composer';
+    }
+
+    if (! file_exists($composerPhar)) {
+        echo PHP_EOL.'Composer nao encontrado. Instalando Composer local do projeto...'.PHP_EOL;
+        tccFacilDownloadComposer();
+    }
+
+    return escapeshellarg(PHP_BINARY).' composer.phar';
+}
+
+function tccFacilEnsureSupportedPhp(): void
+{
+    if (PHP_VERSION_ID >= 80200) {
+        return;
+    }
+
+    fwrite(STDERR, PHP_EOL.'Este projeto usa Laravel 12 e precisa de PHP 8.2 ou superior.'.PHP_EOL);
+    fwrite(STDERR, 'PHP atual: '.PHP_VERSION.PHP_EOL);
+    fwrite(STDERR, 'Atualize o PHP ativo no terminal e rode novamente: php artisan serve'.PHP_EOL);
+    exit(1);
+}
+
 function tccFacilNpmCommand(): string
 {
     return PHP_OS_FAMILY === 'Windows' ? 'npm.cmd' : 'npm';
@@ -51,6 +328,10 @@ function tccFacilSqliteScanDir(): string
 
 function tccFacilEnableBundledSqliteForNextPhpProcess(): void
 {
+    if (in_array('sqlite', PDO::getAvailableDrivers(), true)) {
+        return;
+    }
+
     $scanDir = tccFacilSqliteScanDir();
 
     if (! is_dir($scanDir)) {
@@ -107,6 +388,28 @@ function tccFacilPrepareFiles(): void
     if (! file_exists($basePath.'/database/database.sqlite')) {
         touch($basePath.'/database/database.sqlite');
     }
+
+    tccFacilSetEnvValue('DB_CONNECTION', 'sqlite');
+}
+
+function tccFacilSetEnvValue(string $key, string $value): void
+{
+    $envPath = __DIR__.'/.env';
+
+    if (! file_exists($envPath)) {
+        return;
+    }
+
+    $content = file_get_contents($envPath);
+    $line = $key.'='.$value;
+
+    if (preg_match('/^'.preg_quote($key, '/').'=.*$/m', $content)) {
+        $content = preg_replace('/^'.preg_quote($key, '/').'=.*$/m', $line, $content);
+    } else {
+        $content = rtrim($content).PHP_EOL.$line.PHP_EOL;
+    }
+
+    file_put_contents($envPath, $content);
 }
 
 function tccFacilEnvValueIsEmpty(string $key): bool
@@ -142,19 +445,40 @@ function tccFacilEnsureDefaultCoordinator(): void
     );
 }
 
+function tccFacilEnsureDemoData(Application $app): void
+{
+    if (! class_exists(\App\Models\Turma::class)
+        || ! \Illuminate\Support\Facades\Schema::hasTable('turmas')
+    ) {
+        return;
+    }
+
+    if (\App\Models\Turma::count() > 0) {
+        return;
+    }
+
+    $app->handleCommand(new ArgvInput(['artisan', 'db:seed', '--force']));
+}
+
 $tccFacilShouldPrepareServe = tccFacilIsServeCommand($argv);
+
+if ($tccFacilShouldPrepareServe) {
+    tccFacilRestartWithSupportedPhpIfNeeded($argv);
+    tccFacilRestartThroughAsciiPathIfNeeded($argv);
+}
 
 tccFacilRestartWithSqliteIfNeeded($argv);
 tccFacilEnableBundledSqliteForNextPhpProcess();
 
 if ($tccFacilShouldPrepareServe) {
+    tccFacilEnsureSupportedPhp();
     tccFacilPrepareFiles();
 
     if (tccFacilFileMissingOrOlderThan(__DIR__.'/vendor/autoload.php', [
         __DIR__.'/composer.json',
         __DIR__.'/composer.lock',
     ])) {
-        tccFacilRunShell('composer install');
+        tccFacilRunShell(tccFacilComposerCommand().' install');
     }
 
     if (file_exists(__DIR__.'/package.json')) {
@@ -198,6 +522,7 @@ if ($tccFacilShouldPrepareServe) {
 
     $app->handleCommand(new ArgvInput(['artisan', 'optimize:clear']));
     $app->handleCommand(new ArgvInput(['artisan', 'migrate', '--force']));
+    tccFacilEnsureDemoData($app);
     tccFacilEnsureDefaultCoordinator();
 
     if (! file_exists(__DIR__.'/public/storage')) {

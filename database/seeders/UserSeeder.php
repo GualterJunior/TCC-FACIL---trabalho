@@ -10,58 +10,32 @@ class UserSeeder extends Seeder
 {
     public function run(): void
     {
-        // Coordenadores
-        User::create([
-            'name' => 'Coordenador TCC Facil',
-            'email' => 'coordenador@tccfacil.com',
-            'password' => Hash::make('password'),
-            'tipo' => 'coordenador',
-        ]);
+        $users = [
+            ['name' => 'Coordenador TCC Facil', 'email' => 'coordenador@tccfacil.com', 'tipo' => 'coordenador'],
+            ['name' => 'Maria Coordenadora', 'email' => 'maria@tcc-facil.com', 'tipo' => 'coordenador'],
+            ['name' => 'Joao Coordenador', 'email' => 'joao.coord@tcc-facil.com', 'tipo' => 'coordenador'],
+            ['name' => 'Prof. Ana Silva', 'email' => 'ana.silva@tcc-facil.com', 'tipo' => 'professor'],
+            ['name' => 'Prof. Carlos Oliveira', 'email' => 'carlos.oliveira@tcc-facil.com', 'tipo' => 'professor'],
+            ['name' => 'Prof. Sandra Costa', 'email' => 'sandra.costa@tcc-facil.com', 'tipo' => 'professor'],
+        ];
 
-        User::create([
-            'name' => 'Maria Coordenadora',
-            'email' => 'maria@tcc-facil.com',
-            'password' => Hash::make('password'),
-            'tipo' => 'coordenador',
-        ]);
-
-        User::create([
-            'name' => 'João Coordenador',
-            'email' => 'joao.coord@tcc-facil.com',
-            'password' => Hash::make('password'),
-            'tipo' => 'coordenador',
-        ]);
-
-        // Professores
-        User::create([
-            'name' => 'Prof. Ana Silva',
-            'email' => 'ana.silva@tcc-facil.com',
-            'password' => Hash::make('password'),
-            'tipo' => 'professor',
-        ]);
-
-        User::create([
-            'name' => 'Prof. Carlos Oliveira',
-            'email' => 'carlos.oliveira@tcc-facil.com',
-            'password' => Hash::make('password'),
-            'tipo' => 'professor',
-        ]);
-
-        User::create([
-            'name' => 'Prof. Sandra Costa',
-            'email' => 'sandra.costa@tcc-facil.com',
-            'password' => Hash::make('password'),
-            'tipo' => 'professor',
-        ]);
-
-        // Alunos
         for ($i = 1; $i <= 12; $i++) {
-            User::create([
+            $users[] = [
                 'name' => "Aluno $i da Silva",
                 'email' => "aluno$i@student.com",
-                'password' => Hash::make('password'),
                 'tipo' => 'aluno',
-            ]);
+            ];
+        }
+
+        foreach ($users as $user) {
+            User::updateOrCreate(
+                ['email' => $user['email']],
+                [
+                    'name' => $user['name'],
+                    'password' => Hash::make('password'),
+                    'tipo' => $user['tipo'],
+                ]
+            );
         }
     }
 }
